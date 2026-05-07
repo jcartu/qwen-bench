@@ -244,16 +244,18 @@ issue against the study repo with both CSVs.
 
 ## Adding a new study
 
-When you publish a new benchmark study, the integration steps are:
+When you publish a new benchmark study:
 
-1. **Create the study repo** as `qwen-bench-{YYYY-MM}-{slug}` (or any name; name convention is soft, links are what matter)
-2. **Set GitHub topics:** `qwen`, `vllm`, `blackwell`, `benchmark`, plus study-specific tags
-3. **Open a PR against this hub repo** that:
+1. **Name the new study repo** `qwen-bench-{YYYY-MM}-{slug}` (convention applies to studies created **2026-05 onward**; earlier study repos keep their original names — their URLs are stable forever)
+2. **Add a `← qwen-bench hub` badge** to the new study's README (line 1)
+3. **Set GitHub topics:** `qwen`, `qwen3`, `vllm`, `blackwell`, `benchmark`, plus study-specific tags
+4. **Open a PR against this hub** that:
    - Adds an entry to [`STUDIES.md`](STUDIES.md) with abstract + headline
    - Updates [`SOTA.md`](SOTA.md) if any record was broken
    - Drops the study's `master.csv` into [`data/{YYYY-MM}-{slug}.csv`](data/)
-   - Adds a `## 2026-MM · {Title}` block to the [Studies section](#studies-chronological) above
-4. **Add a "← qwen-bench hub" badge** to the top of the new study's README
+   - Bumps the `studies-N_published` shield count at the top of this README
+
+Full per-study checklist, slug guidelines, and URL-stability rationale: **[CONTRIBUTING.md](CONTRIBUTING.md)**
 
 A future automated script (planned) will compute SOTA-record diffs from
 the merged CSV and prevent regressions from being missed.
