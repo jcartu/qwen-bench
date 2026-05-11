@@ -7,6 +7,35 @@ For the merged machine-readable result tables, see [`data/`](data/).
 
 ---
 
+## 2026-05-11 · Qwen3.6-27B BF16+DFlash parameter sweep on `repne/vllm:v2`
+
+**Repo:** [`qwen-bench-2026-05-dflash-v2-sweep`](https://github.com/jcartu/qwen-bench-2026-05-dflash-v2-sweep)
+**Hardware:** 2× NVIDIA RTX PRO 6000 Blackwell (TP=2)
+**Model:** `Qwen/Qwen3.6-27B` (BF16) + drafter `z-lab/Qwen3.6-27B-DFlash`
+**Server:** `repne/vllm:v2` (sha `58d92a127a1a`, vLLM `0.1.dev16530+ged1130111.d20260510`)
+**Configs measured:** 13 (9 Stage A buffer/graph + 4 Stage B num_speculative_tokens)
+**Harness:** v2 four-phase suite, `--decode-warmup-seconds 20`, `--duration 60`, 60s post-ready settle
+
+### Abstract
+A two-stage 13-config sweep across `--max-num-batched-tokens` ×
+`--max-cudagraph-capture-size` (3×3 grid at num_spec=8 fixed), then
+`--speculative-config.num_speculative_tokens` ∈ {4, 8, 15, 16} at the
+Stage A winner. Establishes which `vllm serve` flags actually move
+decode throughput for BF16+DFlash, and quantifies the quality-measurement
+noise floor at concurrency=8.
+
+### Headline result
+- **Buffer/graph axis is essentially flat**: all 9 Stage A configs land in 183.5–190.1 tok/s (Δ=3.6%)
+- **Speculative-tokens axis is decisive**: n=4 → −62% (drafter accept 0.5%); n=8 → winner (accept 23.1%); n=15 → −7.2%; n=16 → −42.6% (sharp fastpath cliff)
+- **Recommended config = Repne's published defaults**: `batched=32768 capture=256 num_spec=8` at **190.1 tok/s** aggregate decode
+- **Quality noise floor at c=8**: identical config run twice produced HumanEval 58.5%/65.2%, MBPP 82.1%/79.8% — 6.7-point HE spread is run-to-run variance
+- All 13 configs passed 4/4 server gates; 7h total wall time
+
+### Records broken
+- (None — confirms existing recommendations.) Establishes the first public 3×3 buffer/graph map for BF16+DFlash, and the first cliff curve for `num_speculative_tokens` on `repne/vllm:v2`.
+
+---
+
 ## 2026-05-07 · Qwen3.6-27B FP8+DFlash characterization (no-gumbel)
 
 **Repo:** [`qwen36-27b-blackwell-stress-validation`](https://github.com/jcartu/qwen36-27b-blackwell-stress-validation) §13 (addendum)

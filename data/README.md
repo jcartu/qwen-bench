@@ -16,6 +16,7 @@ ground truth and file an issue.
 |------|--------------|------|
 | `2026-05-day1-sprint.csv` | [`qwen36-27b-blackwell-inference-study`](https://github.com/jcartu/qwen36-27b-blackwell-inference-study) | 328 |
 | `2026-05-day2-stress-validation.csv` | [`qwen36-27b-blackwell-stress-validation`](https://github.com/jcartu/qwen36-27b-blackwell-stress-validation) | 5 |
+| `2026-05-dflash-v2-sweep.csv` | [`qwen-bench-2026-05-dflash-v2-sweep`](https://github.com/jcartu/qwen-bench-2026-05-dflash-v2-sweep) | 15 |
 
 ## Schema notes
 
