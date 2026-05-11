@@ -95,7 +95,9 @@ Two reportings shown: the harness-bug-affected original numbers (struck through)
 | **93.9 %** | ~~74.4 %~~ | 154/164 | FP8+DFlash N=8 (offline rescore) | [stress-validation § 13][day2] · [ADDENDUM][addendum] |
 | **93.3 %** | ~~70.7 %~~ | 153/164 | FP8+MTP=3 mt=8192 on `:v2` (offline rescore) | [v2-followup quality-main][v2f] · [ADDENDUM][addendum] |
 | **92.1 %** | ~~79.3 %~~ | 151/164 | FP8+MTP=3 on `:latest` (offline rescore) | [stress-validation § main][day2] · [ADDENDUM][addendum] |
+| **90.9 %** | n/a | 149/164 | BF16+DFlash N=8 **mt=16384** on `:v2` (online, patched harness, **Tier 2**) | [v2-followup tier2][v2f] |
 | 87.2 % | n/a | 143/164 | BF16+DFlash N=8 mt=8192 on `:v2` (online, patched harness) | [v2-followup tier1][v2f] |
+| 84.8 % | n/a | 139/164 | FP8+MTP=3 **mt=16384** on `:v2` (online, patched harness, **Tier 2**) | [v2-followup tier2][v2f] |
 | 83.5 % | n/a | 137/164 | FP8+MTP=3 mt=8192 on `:v2` (online, patched harness) | [v2-followup tier1][v2f] |
 
 **Capability ceiling — pass@5 (any of 5, temp=0.8):**
@@ -104,7 +106,7 @@ Two reportings shown: the harness-bug-affected original numbers (struck through)
 |----------:|-----------:|--------|--------|
 | **96.95 %** ⭐ | 159/164 | FP8+MTP=3 mt=8192 on `:latest`, n=5 samples × 164 problems | [v2-followup pass@5][v2f] |
 
-> The online numbers are lower than offline rescore because the patched harness's new "complete function" prompt produces longer responses, triggering more `max_tokens` truncations at mt=8192. Genuine semantic-failure count is **6–8 per config** — i.e. the model actually solves ~95% of HumanEval. The 87.2 / 83.5 numbers are throughput-budget-bottlenecked, not capability-bottlenecked.
+> **Online ceiling clarification (Tier 2, 2026-05-11):** Doubling `max_tokens` from 8192 to 16384 eliminated all length-truncation failures (`length_truncated: 13 → 0`) but only fully recovered the lost passes for BF16+DFlash (+3.7 pp → 90.9 %). FP8+MTP=3 converted truncations into `empty_response` (7 → 15) instead of passes, gaining only +1.3 pp. **The offline-rescore 95.1 % is the theoretical ceiling, not the reproducible online quality** — the online BF16+DFlash N=8 pass@1 SOTA is **90.9 %**, with the remaining ~4 pp coming from non-truncation failure modes (model gave up, or genuine semantic error).
 
 ### 2.2 MBPP (257 sanitized problems)
 
