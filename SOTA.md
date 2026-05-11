@@ -4,10 +4,13 @@ The cross-study record book. Every claim here is reproducible from raw
 `results.json` files in the linked study repos.
 
 > **Scope:** Qwen3.6-27B on **2× NVIDIA RTX PRO 6000 Blackwell** (TP=2, SM120, 96 GB each, PCIe Gen5 x16).
-> **Last updated:** 2026-05-07
+> **Last updated:** 2026-05-11 (harness-bug post-mortem applied)
 > **Methodology:** All studies use shared conventions (see [`README.md` § Methodology](README.md#methodology)).
 
 ---
+
+> ⚠️ **2026-05-11 correction**: A bug in the HumanEval extraction harness (described in the [v2-followup ADDENDUM](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md)) was deflating reported HumanEval scores by 13–23 percentage points across every prior study. Corrected scores appear in § 2.1 below. Throughput and MBPP records are unaffected.
+
 
 ## TL;DR
 
@@ -81,17 +84,27 @@ For long contexts (ctx ≥ 64k), the FP8+DFlash pairing measured in the
 
 ## 2. Correctness SOTA (Qwen3.6-27B)
 
-### 2.1 HumanEval (164 problems)
+### 2.1 HumanEval (164 problems) — **corrected 2026-05-11**
+
+Two reportings shown: the harness-bug-affected original numbers (struck through) and the corrected post-smart-glue numbers from the offline rescore + online re-bench.
+
+| Pass rate (corrected) | Original (buggy) | Pass count | Config | Source |
+|----------:|----------:|-----------:|--------|--------|
+| **95.7 %** ⭐ | ~~75.6 %~~ | 157/164 | FP8+MTP=5 (offline rescore) | [stress-validation § main][day2] · [ADDENDUM][addendum] |
+| **95.1 %** | ~~74.4 %~~ | 156/164 | BF16+DFlash N=8 mt=8192 (offline rescore) | [v2-followup quality-rerun][v2f] · [ADDENDUM][addendum] |
+| **93.9 %** | ~~74.4 %~~ | 154/164 | FP8+DFlash N=8 (offline rescore) | [stress-validation § 13][day2] · [ADDENDUM][addendum] |
+| **93.3 %** | ~~70.7 %~~ | 153/164 | FP8+MTP=3 mt=8192 on `:v2` (offline rescore) | [v2-followup quality-main][v2f] · [ADDENDUM][addendum] |
+| **92.1 %** | ~~79.3 %~~ | 151/164 | FP8+MTP=3 on `:latest` (offline rescore) | [stress-validation § main][day2] · [ADDENDUM][addendum] |
+| 87.2 % | n/a | 143/164 | BF16+DFlash N=8 mt=8192 on `:v2` (online, patched harness) | [v2-followup tier1][v2f] |
+| 83.5 % | n/a | 137/164 | FP8+MTP=3 mt=8192 on `:v2` (online, patched harness) | [v2-followup tier1][v2f] |
+
+**Capability ceiling — pass@5 (any of 5, temp=0.8):**
 
 | Pass rate | Pass count | Config | Source |
 |----------:|-----------:|--------|--------|
-| **79.3 %** ⭐ | 130/164 | FP8+MTP=3 | [stress-validation § main][day2] |
-| 78.0 % | 128/164 | BF16+DFlash N=15 (no-gumbel) | [stress-validation § 12][day2] |
-| 75.6 % | 124/164 | FP8+MTP=5 | [stress-validation § main][day2] |
-| 74.4 % | 122/164 | FP8+DFlash N=8 (no-gumbel) | [stress-validation § 13][day2] |
-| 73.8 % | 121/164 | FP8+DFlash N=7 (no-gumbel) | [stress-validation § 13][day2] |
-| 73.8 % | 121/164 | FP8+DFlash N=15 (no-gumbel) | [stress-validation § 13][day2] |
-| 73.2 % | 120/164 | BF16+DFlash N=7/8/15 (gumbel-on, original) | [stress-validation § main][day2] |
+| **96.95 %** ⭐ | 159/164 | FP8+MTP=3 mt=8192 on `:latest`, n=5 samples × 164 problems | [v2-followup pass@5][v2f] |
+
+> The online numbers are lower than offline rescore because the patched harness's new "complete function" prompt produces longer responses, triggering more `max_tokens` truncations at mt=8192. Genuine semantic-failure count is **6–8 per config** — i.e. the model actually solves ~95% of HumanEval. The 87.2 / 83.5 numbers are throughput-budget-bottlenecked, not capability-bottlenecked.
 
 ### 2.2 MBPP (257 sanitized problems)
 
@@ -210,6 +223,8 @@ This file is the **canonical leaderboard**. Studies are the **canonical evidence
 
 [day1]: https://github.com/jcartu/qwen36-27b-blackwell-inference-study
 [day2]: https://github.com/jcartu/qwen36-27b-blackwell-stress-validation
+[v2f]: https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup
+[addendum]: https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md
 
 - **All Qwen3.6-27B Day 1 sprint data** (per-cell N=3 production data, KLD probe, high-concurrency sweep, MTP n-sweep): [`qwen36-27b-blackwell-inference-study`][day1]
 - **All Qwen3.6-27B stress-validation data** (5 configs × HumanEval × MBPP, plus addenda): [`qwen36-27b-blackwell-stress-validation`][day2]

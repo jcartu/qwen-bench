@@ -7,6 +7,33 @@ For the merged machine-readable result tables, see [`data/`](data/).
 
 ---
 
+## 2026-05-11 (post-mortem) · HumanEval harness bug — every prior HE score deflated 13–23 pp
+
+**Repo:** [`qwen-bench-2026-05-11-v2-followup`](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) (ADDENDUM + Tier 1 rerun + patched harness)
+**Trigger:** Repne’s Discord hypotheses about why HE scores looked off on `repne/vllm:v2` (max_tokens=4096 truncations, timeouts, c=1 vs c=8, pass@5 capability ceiling).
+**Hardware:** 2× NVIDIA RTX PRO 6000 Blackwell (TP=2, GPUs 0+1)
+**Harness:** `llm-stress-harness` v2 — **patched** with `smart_glue_humaneval()` extraction + “complete the function” prompt
+
+### Abstract
+Investigating Repne’s hypotheses surfaced a real bug in the HE extraction harness: `extract_code()` was calling `.strip()` on body-only model responses, which left the first response line at column 0 instead of indented inside the function signature appended by the test driver. Result: `IndentationError`, classified as `test_fail`, no signal that the model was actually correct. The bug is consistent across every HE study in this hub. Offline rescore via `smart_glue_humaneval()` (re-indents, prepends signature if missing) corrects all 9 historical jsonls by +13 to +23 pp.
+
+### Headline result
+- **The model has been ~93–96 % on HumanEval all along**, not 70–79 %.
+- **Corrected SOTA: FP8+MTP=5 = 95.7 %** (offline rescore of stress-validation jsonl).
+- **Closest BF16 SOTA: BF16+DFlash N=8 mt=8192 = 95.1 %** (offline rescore of v2-followup quality-rerun jsonl).
+- **Capability ceiling — pass@5 (any of 5, temp=0.8) = 96.95 %** (159/164) on FP8+MTP=3 `:latest` mt=8192.
+- **Tier 1 online re-bench (patched harness, mt=8192)**: BF16+DFlash N=8 = 87.2 %, FP8+MTP=3 = 83.5 %. Lower than offline rescore because the new prompt produces longer responses → more `max_tokens` truncations at mt=8192. Genuine semantic-fail count is 6–8 per config, confirming the ~95 % true ceiling.
+- Repne hypotheses falsified: there is no MTP regression, no `:v2` regression, and no concurrency degradation. The gap was a measurement bug, not a model bug.
+
+### Records broken / restored
+- New canonical HumanEval SOTA on Qwen3.6-27B = **95.7 %** (FP8+MTP=5, offline-rescored).
+- New capability-ceiling reference = **96.95 %** pass@5.
+- All prior HE numbers in `SOTA.md` retained with strikethrough — we don’t erase history.
+- Official harness patched ([commit on llm-stress-harness](https://github.com/jcartu/llm-stress-harness)); reusable offline rescorer published in [`harness/rescore_humaneval.py`](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/harness/rescore_humaneval.py).
+
+**Read the full bug analysis**: [ADDENDUM.md](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md)
+
+---
 ## 2026-05-11 (followup) · Where are the next big gains? FP8+MTP{3,5} on `repne/vllm:v2` + max_tokens=8192
 
 **Repo:** [`qwen-bench-2026-05-11-v2-followup`](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup)
@@ -19,11 +46,11 @@ For the merged machine-readable result tables, see [`data/`](data/).
 ### Abstract
 Follow-up to study #3 (BF16+DFlash sweep) asking two open questions: (1) where do the next throughput gains come from — deeper MTP, or have we plateaued? and (2) do the empty_response failures at max_tokens=4096 recover at max_tokens=8192? Measures FP8+MTP=3 and FP8+MTP=5 head-to-head against study #3's BF16+DFlash n=8 winner, and re-runs both winning configs at max_tokens=8192 for HumanEval + MBPP.
 
-### Headline result
+### Headline result (⚠️ HE numbers below are pre-patch; see harness-bug post-mortem above for corrected values)
 - **Speed: FP8+MTP=3 is the new SOTA on `repne/vllm:v2`** at **245.32 tok/s** mean across 15 cells — **+29.1%** over study #3's BF16+DFlash n=8 winner (189.98 tok/s).
 - **FP8+MTP=5 plateaus**: 246.59 tok/s (+0.5% over MTP=3) but acceptance rate collapses 56.7% → 35.3%. Deeper drafter doesn't pay.
 - **Peak single-cell throughput: 445 tok/s** at c=4, ctx=16k — highest measured across any of the four studies.
-- **Quality at max_tokens=8192**: FP8+MTP=3 HumanEval = 70.7% (116/164, 8 empty), MBPP = 86.8% (223/257, 26 empty). Mean completion tokens 2983 vs ~1500 at mt=4096 in study #2 — reasoning was budget-truncated previously.
+- **Quality at max_tokens=8192**: FP8+MTP=3 HumanEval = ~~70.7 %~~ → **93.3 %** (corrected via [ADDENDUM](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md)); MBPP = 86.8 % (unaffected by the HE bug). Mean completion tokens 2983 vs ~1500 at mt=4096 in study #2.
 - **Empty-response recovery is partial**: doubling max_tokens trades early-truncation empties for over-thinking-budget-exhaustion empties. The real fix is dynamic stopping, not more tokens.
 
 ### Records broken
@@ -211,4 +238,4 @@ The short version:
 
 ---
 
-*Last updated: 2026-05-07*
+*Last updated: 2026-05-11 (HumanEval harness-bug post-mortem)*
