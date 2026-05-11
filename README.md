@@ -6,7 +6,7 @@
 
 ### Empirical inference characterization of Qwen models on NVIDIA Blackwell
 
-[![Studies](https://img.shields.io/badge/studies-2_published-success?style=for-the-badge)](STUDIES.md)
+[![Studies](https://img.shields.io/badge/studies-3_published-success?style=for-the-badge)](STUDIES.md)
 [![SOTA](https://img.shields.io/badge/SOTA-tracker-blue?style=for-the-badge)](SOTA.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![Topic: qwen](https://img.shields.io/badge/topic-qwen-orange?style=for-the-badge)](https://github.com/topics/qwen)
@@ -98,6 +98,18 @@ zero crashes across 2,105 hard problems.
 </div>
 
 Each study is a self-contained satellite repo. Studies are listed newest-first.
+
+### 📖 2026-05 · BF16+DFlash parameter sweep on `repne/vllm:v2`
+**[`qwen-bench-2026-05-dflash-v2-sweep`](https://github.com/jcartu/qwen-bench-2026-05-dflash-v2-sweep)** · *13 configs · 195 cells · 421 quality problems · 7h total wall time*
+
+Two-stage sweep on `Qwen3.6-27B` BF16+DFlash, TP=2: 3×3 grid of
+`--max-num-batched-tokens` × `--max-cudagraph-capture-size` (Stage A), then
+`num_speculative_tokens ∈ {4, 8, 15, 16}` at the winner (Stage B), plus a
+two-config Quality comparison establishing the c=8 noise floor.
+
+**Headline:** Buffer/graph axis is flat (Δ=3.6 %). Speculative-tokens axis is
+decisive: n=4 → −62 %, n=8 → winner, n=16 → −42.6 % cliff. Confirms Repne's
+published defaults (`batched=32768 capture=256 num_spec=8`) are optimal.
 
 ### 📖 2026-05 · Stress-validation suite
 **[`qwen36-27b-blackwell-stress-validation`](https://github.com/jcartu/qwen36-27b-blackwell-stress-validation)** · *5 configs × 4 phases × 2,105 hard problems · Zero crashes*
