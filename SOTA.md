@@ -97,8 +97,9 @@ For long contexts (ctx ≥ 64k), the FP8+DFlash pairing measured in the
 
 | Pass rate | Pass count | Config | Source |
 |----------:|-----------:|--------|--------|
-| **89.5 %** ⭐ | 230/257 | BF16+DFlash N=8 | [stress-validation § main][day2] |
-| **89.5 %** ⭐ | 230/257 | BF16+DFlash N=15 | [stress-validation § main][day2] |
+| **90.3 %** ⭐ | 232/257 | BF16+DFlash N=8 @ max_tokens=8192 | [v2-followup study](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) |
+| 89.5 % | 230/257 | BF16+DFlash N=8 | [stress-validation § main][day2] |
+| 89.5 % | 230/257 | BF16+DFlash N=15 | [stress-validation § main][day2] |
 | 89.1 % | 229/257 | BF16+DFlash N=7 | [stress-validation § main][day2] |
 | 88.7 % | 228/257 | BF16+DFlash N=7 (no-gumbel) | [stress-validation § 12][day2] |
 | 88.3 % | 227/257 | FP8+DFlash N=8 (no-gumbel) | [stress-validation § 13][day2] |
