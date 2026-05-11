@@ -6,7 +6,7 @@
 
 ### Empirical inference characterization of Qwen models on NVIDIA Blackwell
 
-[![Studies](https://img.shields.io/badge/studies-3_published-success?style=for-the-badge)](STUDIES.md)
+[![Studies](https://img.shields.io/badge/studies-4_published-success?style=for-the-badge)](STUDIES.md)
 [![SOTA](https://img.shields.io/badge/SOTA-tracker-blue?style=for-the-badge)](SOTA.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![Topic: qwen](https://img.shields.io/badge/topic-qwen-orange?style=for-the-badge)](https://github.com/topics/qwen)
