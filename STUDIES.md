@@ -7,6 +7,38 @@ For the merged machine-readable result tables, see [`data/`](data/).
 
 ---
 
+## 2026-05-12 · Qwen3.6-27B Tier-3 v3 full suite — `repne/vllm:v3` validation
+
+**Repo:** [`qwen-bench-2026-05-12-v3-suite`](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite)
+**Trigger:** Repne shipped `repne/vllm:v3`. Need to validate all 4 spec-decoding configs against v2 baselines before promoting to `:latest`.
+**Hardware:** 2× NVIDIA RTX PRO 6000 Blackwell (TP=2, GPUs 0+1; GPU 2 reserved for Hindsight, untouched)
+**Models:** `Qwen/Qwen3.6-27B` (BF16), `Qwen/Qwen3.6-27B-FP8`; drafter `z-lab/Qwen3.6-27B-DFlash`
+**Server:** `repne/vllm:v3` (digest `fd2f7b567b19`, 29.7 GB)
+**Configs measured:** BF16+DFlash N=8, FP8+DFlash N=8, FP8+MTP=3, FP8+MTP=5 (4 × full suite: gates + throughput sweep + prefill sweep + HE-164 + MBPP-257)
+**Harness:** patched stress harness with `smart_glue_humaneval`, mt=16384, hardened launcher with per-phase log snapshots
+**Wall time:** 3 h 32 min (03:59:19 → 07:31:32 MSK)
+
+### Abstract
+Full 4-configuration stress-validation suite on Repne's `:v3` image to determine whether to promote it as the new online SOTA. Mirrors the v2-followup Tier 2 methodology (mt=16384, patched harness) but adds FP8+DFlash N=8 and FP8+MTP=5 alongside the BF16+DFlash N=8 and FP8+MTP=3 baselines. Run 1 of Config 1 (BF16+DFlash) crashed mid-HumanEval with `EngineCore encountered an issue` (HTTP 500); launcher was hardened to capture per-phase docker logs; Run 2 of all 4 configs completed clean with zero engine errors.
+
+### Headline result
+- **`:v3` improves over `:v2` cleanly on every matching config**: BF16+DFlash N=8 HE 90.9 → **92.7 %** (+1.8 pp), FP8+MTP=3 HE 84.8 → **88.4 %** (+3.6 pp).
+- **New winner: `:v3` + FP8+MTP=5 = 93.3 % HE / 87.2 % MBPP / 402 tok/s peak / 101 tok/s single-user / 0 length-truncated.** Recommended new online SOTA candidate.
+- **0 length_truncated across all 4 v3 configs on both HE and MBPP.** The `empty_response` drift seen on v2 FP8+MTP=3 at mt=16384 (7→15) is gone on v3.
+- **MBPP record broken: 91.1 %** (BF16+DFlash N=8 on `:v3`) over prior 90.3 % on `:v2`.
+- Run 1 BF16+DFlash crash filed for Repne as low-frequency transient (non-reproducible on rerun; stack trace lost on Run 1, hardened launcher in study repo will preserve it if it recurs).
+
+### Records broken
+- HumanEval pass@1 SOTA online: 90.9 → **93.3 %** (FP8+MTP=5 on `:v3`)
+- MBPP pass@1 SOTA: 90.3 → **91.1 %** (BF16+DFlash N=8 on `:v3`)
+- Peak throughput on a quality-validated config: 245 → **402 tok/s** (FP8+MTP=5 on `:v3`)
+- Single-user throughput on a quality-validated config: ~69 → **101 tok/s** (FP8+MTP=5 on `:v3`)
+- First clean 4-config full-suite at 0 length-truncated on Qwen3.6-27B
+
+**Full report**: [FINAL_REPORT.md](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/FINAL_REPORT.md). **Repne bug report draft**: [repne_reply_draft.md](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/repne_reply_draft.md).
+
+---
+
 ## 2026-05-11 (post-mortem) · HumanEval harness bug — every prior HE score deflated 13–23 pp
 
 **Repo:** [`qwen-bench-2026-05-11-v2-followup`](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) (ADDENDUM + Tier 1 rerun + patched harness)
@@ -238,4 +270,4 @@ The short version:
 
 ---
 
-*Last updated: 2026-05-11 (HumanEval harness-bug post-mortem)*
+*Last updated: 2026-05-12 (Tier-3 v3 suite)*
