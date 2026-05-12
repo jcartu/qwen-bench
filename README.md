@@ -49,7 +49,7 @@ citable URL.
 
 ## Current SOTA
 
-> Last updated: **2026-05-11** · Hardware: **2× NVIDIA RTX PRO 6000 Blackwell** (TP=2, SM120, 96 GB each, PCIe Gen5 x16)
+> Last updated: **2026-05-12** · Hardware: **2× NVIDIA RTX PRO 6000 Blackwell** (TP=2, SM120, 96 GB each, PCIe Gen5 x16)
 
 ### 🏆 Production-recommended config: **FP8 + MTP=3** (Repne fork)
 
@@ -73,8 +73,10 @@ zero crashes across 2,105 hard problems.
 |-----------|----------:|--------|--------|
 | HumanEval (164) — corrected ⭐ | **95.7 %** (157/164) | FP8+MTP=5 (offline rescore) | [v2-followup ADDENDUM](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md) |
 | HumanEval pass@5 (any of 5) | **96.95 %** (159/164) | FP8+MTP=3 mt=8192 on `:latest`, temp=0.8 | [v2-followup](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) |
+| HumanEval (164) — online SOTA, **`:v3`** | **93.3 %** (153/164) | FP8+MTP=5 on `repne/vllm:v3`, mt=16384 | [v3suite](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite) |
 | HumanEval (164) — BF16 best | **95.1 %** (156/164) | BF16+DFlash N=8 mt=8192 (offline rescore) | [v2-followup ADDENDUM](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md) |
-| MBPP (257) | **90.3 %** (232/257) | BF16+DFlash N=8 @ mt=8192 | [v2-followup](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) |
+| MBPP (257) ⭐ | **91.1 %** (234/257) | BF16+DFlash N=8 on `repne/vllm:v3` | [v3suite](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite) |
+| MBPP (257) | 90.3 % (232/257) | BF16+DFlash N=8 @ mt=8192 on `:v2` | [v2-followup](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) |
 | MBPP (257) | 89.5 % (230/257) | BF16+DFlash=8 (mt=4096) | [stress-validation](https://github.com/jcartu/qwen36-27b-blackwell-stress-validation) |
 
 > ⚠️ **HumanEval scores corrected 2026-05-11.** A bug in the harness's `extract_code()` deflated every prior HE result by 13–23 pp. Original (pre-correction) numbers are preserved with strikethrough in [SOTA.md § 2.1](SOTA.md#21-humaneval-164-problems--corrected-2026-05-11). See the [ADDENDUM](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md) for the full bug analysis and fix.

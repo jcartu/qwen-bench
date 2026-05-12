@@ -4,17 +4,21 @@ The cross-study record book. Every claim here is reproducible from raw
 `results.json` files in the linked study repos.
 
 > **Scope:** Qwen3.6-27B on **2× NVIDIA RTX PRO 6000 Blackwell** (TP=2, SM120, 96 GB each, PCIe Gen5 x16).
-> **Last updated:** 2026-05-11 (harness-bug post-mortem applied)
+> **Last updated:** 2026-05-12 (v3 suite — Repne fork upgrade)
 > **Methodology:** All studies use shared conventions (see [`README.md` § Methodology](README.md#methodology)).
 
 ---
 
 > ⚠️ **2026-05-11 correction**: A bug in the HumanEval extraction harness (described in the [v2-followup ADDENDUM](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md)) was deflating reported HumanEval scores by 13–23 percentage points across every prior study. Corrected scores appear in § 2.1 below. Throughput and MBPP records are unaffected.
 
+> 🆕 **2026-05-12 v3 update**: Repne shipped [`repne/vllm:v3`](https://hub.docker.com/r/repne/vllm). Full 4-config stress-validation suite re-run on it ([study repo][v3suite]) shows clean improvements across the board: BF16+DFlash N=8 HE 90.9 → **92.7 %**, FP8+MTP=3 HE 84.8 → **88.4 %**, plus a new winner — **`FP8+MTP=5` at 93.3 % HE / 402 tok/s peak / 101 tok/s single-user / 0 length-truncated**. Recommended new online SOTA candidate; promotion gated on a low-frequency BF16+DFlash transient (Run 1 crash, non-reproducible) clearing staging soak. See [`v3suite/FINAL_REPORT.md`][v3report].
+
 
 ## TL;DR
 
-**Production-recommended config:** `FP8+MTP=3` on the [Repne fork](https://hub.docker.com/r/repne/vllm).
+**Production-recommended config (current `:latest`):** `FP8+MTP=3` on the [Repne fork](https://hub.docker.com/r/repne/vllm).
+
+**Recommended SOTA candidate (2026-05-12, pending promotion):** `repne/vllm:v3` + `FP8+MTP=5` — 93.3 % HE, 87.2 % MBPP, 402 tok/s peak, 101 tok/s single-user, 0 length-truncated. See § 2.1 row 1 and the [v3 suite study][v3suite].
 
 It holds the production-relevant SOTA across throughput, correctness, and
 operational-stability dimensions. `MTP=5` and `BF16+DFlash` variants hold
@@ -95,7 +99,11 @@ Two reportings shown: the harness-bug-affected original numbers (struck through)
 | **93.9 %** | ~~74.4 %~~ | 154/164 | FP8+DFlash N=8 (offline rescore) | [stress-validation § 13][day2] · [ADDENDUM][addendum] |
 | **93.3 %** | ~~70.7 %~~ | 153/164 | FP8+MTP=3 mt=8192 on `:v2` (offline rescore) | [v2-followup quality-main][v2f] · [ADDENDUM][addendum] |
 | **92.1 %** | ~~79.3 %~~ | 151/164 | FP8+MTP=3 on `:latest` (offline rescore) | [stress-validation § main][day2] · [ADDENDUM][addendum] |
+| **93.3 %** ⭐ | n/a | 153/164 | FP8+MTP=5 on **`:v3`** (online, patched harness, **Tier 3**) | [v3suite config-4][v3suite] |
+| **92.7 %** | n/a | 152/164 | BF16+DFlash N=8 on **`:v3`** (online, patched harness, **Tier 3**) | [v3suite config-1][v3suite] |
 | **90.9 %** | n/a | 149/164 | BF16+DFlash N=8 **mt=16384** on `:v2` (online, patched harness, **Tier 2**) | [v2-followup tier2][v2f] |
+| **89.0 %** | n/a | 146/164 | FP8+DFlash N=8 on **`:v3`** (online, patched harness, **Tier 3**) | [v3suite config-2][v3suite] |
+| **88.4 %** | n/a | 145/164 | FP8+MTP=3 on **`:v3`** (online, patched harness, **Tier 3**) | [v3suite config-3][v3suite] |
 | 87.2 % | n/a | 143/164 | BF16+DFlash N=8 mt=8192 on `:v2` (online, patched harness) | [v2-followup tier1][v2f] |
 | 84.8 % | n/a | 139/164 | FP8+MTP=3 **mt=16384** on `:v2` (online, patched harness, **Tier 2**) | [v2-followup tier2][v2f] |
 | 83.5 % | n/a | 137/164 | FP8+MTP=3 mt=8192 on `:v2` (online, patched harness) | [v2-followup tier1][v2f] |
@@ -106,13 +114,19 @@ Two reportings shown: the harness-bug-affected original numbers (struck through)
 |----------:|-----------:|--------|--------|
 | **96.95 %** ⭐ | 159/164 | FP8+MTP=3 mt=8192 on `:latest`, n=5 samples × 164 problems | [v2-followup pass@5][v2f] |
 
-> **Online ceiling clarification (Tier 2, 2026-05-11):** Doubling `max_tokens` from 8192 to 16384 eliminated all length-truncation failures (`length_truncated: 13 → 0`) but only fully recovered the lost passes for BF16+DFlash (+3.7 pp → 90.9 %). FP8+MTP=3 converted truncations into `empty_response` (7 → 15) instead of passes, gaining only +1.3 pp. **The offline-rescore 95.1 % is the theoretical ceiling, not the reproducible online quality** — the online BF16+DFlash N=8 pass@1 SOTA is **90.9 %**, with the remaining ~4 pp coming from non-truncation failure modes (model gave up, or genuine semantic error).
+> **Online ceiling clarification (Tier 2, 2026-05-11):** Doubling `max_tokens` from 8192 to 16384 eliminated all length-truncation failures (`length_truncated: 13 → 0`) but only fully recovered the lost passes for BF16+DFlash (+3.7 pp → 90.9 %). FP8+MTP=3 converted truncations into `empty_response` (7 → 15) instead of passes, gaining only +1.3 pp. **The offline-rescore 95.1 % is the theoretical ceiling, not the reproducible online quality** — the online BF16+DFlash N=8 pass@1 SOTA on `:v2` was **90.9 %**.
+
+> **v3 ceiling update (Tier 3, 2026-05-12):** Re-running the same configs on `repne/vllm:v3` lifted both ceilings cleanly. BF16+DFlash N=8: **92.7 %** (+1.8 pp vs v2). FP8+MTP=3: **88.4 %** (+3.6 pp vs v2). New winner config FP8+MTP=5: **93.3 %**, closing the gap to the offline rescore ceiling to under 2 pp. All four v3 configs had **0 length_truncated** on both HE and MBPP — the `empty_response` drift seen on v2 FP8+MTP=3 at mt=16384 is gone. Online pass@1 SOTA is now **93.3 % (FP8+MTP=5 on `:v3`)**.
 
 ### 2.2 MBPP (257 sanitized problems)
 
 | Pass rate | Pass count | Config | Source |
 |----------:|-----------:|--------|--------|
-| **90.3 %** ⭐ | 232/257 | BF16+DFlash N=8 @ max_tokens=8192 | [v2-followup study](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) |
+| **91.1 %** ⭐ | 234/257 | BF16+DFlash N=8 on **`:v3`** (Tier 3) | [v3suite config-1][v3suite] |
+| 90.3 % | 232/257 | BF16+DFlash N=8 @ max_tokens=8192 on `:v2` | [v2-followup study](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) |
+| 89.1 % | 229/257 | FP8+MTP=3 on **`:v3`** (Tier 3) | [v3suite config-3][v3suite] |
+| 88.7 % | 228/257 | FP8+DFlash N=8 on **`:v3`** (Tier 3) | [v3suite config-2][v3suite] |
+| 87.2 % | 224/257 | FP8+MTP=5 on **`:v3`** (Tier 3) | [v3suite config-4][v3suite] |
 | 89.5 % | 230/257 | BF16+DFlash N=8 | [stress-validation § main][day2] |
 | 89.5 % | 230/257 | BF16+DFlash N=15 | [stress-validation § main][day2] |
 | 89.1 % | 229/257 | BF16+DFlash N=7 | [stress-validation § main][day2] |
@@ -174,6 +188,8 @@ principle that any 8-bit quant near BF16 should also be near BF16's KLD floor.
 | Hardest validation completed without engine failure | **2,105 hard problems** across 5 configs, **0 crashes / 0 hangs / 0 malformed JSON** | [stress-validation § main][day2] |
 | Longest stable single-context generation | 137K-token needle-in-haystack found in 23.3s | [day1-sprint § exp 03][day1] |
 | Fastest cold start (FP8 27B TP=2) | 105s with `--load-format instanttensor` (210s without) | [day1-sprint § exp 06][day1] |
+| Longest single-image clean suite (v3) | **3 h 32 min, 4 configs, 1,684 quality probes (4×HE 164 + 4×MBPP 257), 0 engine errors on Run 2** | [v3suite][v3suite] |
+| Low-frequency v3 transient (filed) | Run 1 BF16+DFlash N=8 EngineCore HTTP 500 at HE 34/164; non-reproducible; stack trace lost (launcher now hardened) | [v3suite run1-CRASHED][v3suite] |
 
 ---
 
@@ -227,6 +243,8 @@ This file is the **canonical leaderboard**. Studies are the **canonical evidence
 [day2]: https://github.com/jcartu/qwen36-27b-blackwell-stress-validation
 [v2f]: https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup
 [addendum]: https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md
+[v3suite]: https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite
+[v3report]: https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/FINAL_REPORT.md
 
 - **All Qwen3.6-27B Day 1 sprint data** (per-cell N=3 production data, KLD probe, high-concurrency sweep, MTP n-sweep): [`qwen36-27b-blackwell-inference-study`][day1]
 - **All Qwen3.6-27B stress-validation data** (5 configs × HumanEval × MBPP, plus addenda): [`qwen36-27b-blackwell-stress-validation`][day2]
