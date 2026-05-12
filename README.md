@@ -51,10 +51,21 @@ citable URL.
 
 > Last updated: **2026-05-12** · Hardware: **2× NVIDIA RTX PRO 6000 Blackwell** (TP=2, SM120, 96 GB each, PCIe Gen5 x16)
 
-### 🏆 Production-recommended config: **FP8 + MTP=3** (Repne fork)
+### 🏆 Production-deployed config (2026-05-12): **`repne/vllm:v3` + FP8 + MTP=3**
 
-The configuration that ships in production. Wins HumanEval, second-best on MBPP,
-zero crashes across 2,105 hard problems.
+The configuration currently live on production (`vllm-qwen36-27b-sota.service`,
+promoted 2026-05-12 ~10:03 MSK). 88.4 % HE / 89.1 % MBPP / 369 tok/s peak /
+98 tok/s single-user / 0 length-truncated. Reasoning routed cleanly into the
+OpenAI `reasoning` field; `content` clean.
+
+**Benchmark-only — NOT deployable:** FP8+MTP=5 scored 93.3 % HE / 402 tok/s peak
+in the offline harness but leaks raw `<think>...</think>` blocks into the OpenAI
+`content` field on production traffic. The deployed MTP=3 config was validated
+leak-free across **420 trials** (300 plain-chat @ T=0.7 + 120 tool/function-calling @ T=0.7,
+scanning `content`, `tool_calls[*].function.name`, and `tool_calls[*].function.arguments`)
+by the permanent dual-mode leak probe (`harness/leak_probe.py`). See
+[v3 suite Production Incident](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/FINAL_REPORT.md#production-incident-2026-05-12-mtp--use_local_argmax_reduction-incompatibility)
+and [LEAK_DETECTION.md](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/LEAK_DETECTION.md).
 
 ### Throughput records (aggregate tok/s)
 
@@ -73,8 +84,9 @@ zero crashes across 2,105 hard problems.
 |-----------|----------:|--------|--------|
 | HumanEval (164) — corrected ⭐ | **95.7 %** (157/164) | FP8+MTP=5 (offline rescore) | [v2-followup ADDENDUM](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md) |
 | HumanEval pass@5 (any of 5) | **96.95 %** (159/164) | FP8+MTP=3 mt=8192 on `:latest`, temp=0.8 | [v2-followup](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) |
-| HumanEval (164) — online SOTA, **`:v3`** | **93.3 %** (153/164) | FP8+MTP=5 on `repne/vllm:v3`, mt=16384 | [v3suite](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite) |
+| HumanEval (164) — offline harness, **`:v3`** | 93.3 % (153/164) | FP8+MTP=5 on `repne/vllm:v3`, mt=16384 ⚠️ benchmark-only (`<think>` leaks into `content` in production) | [v3suite](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite) |
 | HumanEval (164) — BF16 best | **95.1 %** (156/164) | BF16+DFlash N=8 mt=8192 (offline rescore) | [v2-followup ADDENDUM](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md) |
+| **HumanEval (164) — production-deployed SOTA** ⭐ | **88.4 %** (145/164) | **FP8+MTP=3 on `repne/vllm:v3`** — currently live | [v3suite](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite) |
 | MBPP (257) ⭐ | **91.1 %** (234/257) | BF16+DFlash N=8 on `repne/vllm:v3` | [v3suite](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite) |
 | MBPP (257) | 90.3 % (232/257) | BF16+DFlash N=8 @ mt=8192 on `:v2` | [v2-followup](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) |
 | MBPP (257) | 89.5 % (230/257) | BF16+DFlash=8 (mt=4096) | [stress-validation](https://github.com/jcartu/qwen36-27b-blackwell-stress-validation) |

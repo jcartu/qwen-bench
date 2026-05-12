@@ -23,19 +23,24 @@ Full 4-configuration stress-validation suite on Repne's `:v3` image to determine
 
 ### Headline result
 - **`:v3` improves over `:v2` cleanly on every matching config**: BF16+DFlash N=8 HE 90.9 → **92.7 %** (+1.8 pp), FP8+MTP=3 HE 84.8 → **88.4 %** (+3.6 pp).
-- **New winner: `:v3` + FP8+MTP=5 = 93.3 % HE / 87.2 % MBPP / 402 tok/s peak / 101 tok/s single-user / 0 length-truncated.** Recommended new online SOTA candidate.
+- **Production SOTA (deployed): `:v3` + FP8+MTP=3** — 88.4 % HE / 89.1 % MBPP / 369 tok/s peak / 98 tok/s single-user / 0 length-trunc / reasoning cleanly separated into the OpenAI `reasoning` field. Live since ~10:03 MSK 2026-05-12.
+- **Benchmark-only, NOT production: `:v3` + FP8+MTP=5** — 93.3 % HE / 402 tok/s peak in the offline harness, but leaks raw `<think>...</think>` blocks into OpenAI `content` on production traffic. The +4.9 pp HE delta vs MTP=3 is harness-counting-noise (the harness scores leaked think blobs as code), not real downstream quality.
 - **0 length_truncated across all 4 v3 configs on both HE and MBPP.** The `empty_response` drift seen on v2 FP8+MTP=3 at mt=16384 (7→15) is gone on v3.
 - **MBPP record broken: 91.1 %** (BF16+DFlash N=8 on `:v3`) over prior 90.3 % on `:v2`.
 - Run 1 BF16+DFlash crash filed for Repne as low-frequency transient (non-reproducible on rerun; stack trace lost on Run 1, hardened launcher in study repo will preserve it if it recurs).
+- **Production-incident finding** during v3 rollout: `--speculative-config.use_local_argmax_reduction true` is **DFlash-only**, not TP-only — the in-model `Qwen3_5MTP` drafter does not implement `get_top_tokens()`, so the engine refuses to start an MTP config with that flag (`ValueError`). The bench harness already had this right; the production launcher was the one wrong. See [Production Incident](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/FINAL_REPORT.md#production-incident-2026-05-12-mtp--use_local_argmax_reduction-incompatibility).
+- **Production-incident finding** (think-token leak validation): operator escalation "MTP=3 leaks too, just less so you need a longer test to validate" + "we need a more robust leak test which does extensive tool and function calling" prompted a permanent dual-mode leak probe (`harness/leak_probe.py`: 75-prompt chat corpus across 15 categories + 30-scenario tools corpus across 10 OpenAI-schema function tools; scans `content` AND every `tool_calls[*].function.{name, arguments}` for `<think`/`</think>`/`<reasoning`/`</reasoning>`). Runs: MTP=3 chat smoke 75/0, MTP=2 chat smoke 74/0, **MTP=3 chat extended @ T=0.7 — 300 trials, 0 leaks**, **MTP=3 tools @ T=0.7 — 120 trials (95 % real tool-call rate, 4 multi-tool responses), 0 leaks across all three surfaces**. Combined 420 trials, zero leaks; MTP=5 leak class is MTP=5-specific in our environment. See [`LEAK_DETECTION.md`](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/LEAK_DETECTION.md).
 
-### Records broken
-- HumanEval pass@1 SOTA online: 90.9 → **93.3 %** (FP8+MTP=5 on `:v3`)
+### Records broken / clarifications
+- HumanEval pass@1 SOTA online — **deployed production**: 84.8 → **88.4 %** (FP8+MTP=3 on `:v3`)
+- HumanEval pass@1 SOTA online — **benchmark harness only**: 90.9 → **93.3 %** (FP8+MTP=5 on `:v3`) — not deployable due to `<think>` leak
 - MBPP pass@1 SOTA: 90.3 → **91.1 %** (BF16+DFlash N=8 on `:v3`)
-- Peak throughput on a quality-validated config: 245 → **402 tok/s** (FP8+MTP=5 on `:v3`)
-- Single-user throughput on a quality-validated config: ~69 → **101 tok/s** (FP8+MTP=5 on `:v3`)
+- Peak throughput on a quality-validated config: 245 → **402 tok/s** (FP8+MTP=5 offline) / **369 tok/s** (FP8+MTP=3, production)
+- Single-user throughput on a quality-validated config: ~69 → **101 tok/s** (FP8+MTP=5 offline) / **98 tok/s** (FP8+MTP=3, production)
 - First clean 4-config full-suite at 0 length-truncated on Qwen3.6-27B
+- **New permanent CI-gatable leak probe** (`harness/leak_probe.py`, dual-mode chat + tools) with 420-trial clean-run baseline on production config
 
-**Full report**: [FINAL_REPORT.md](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/FINAL_REPORT.md). **Repne bug report draft**: [repne_reply_draft.md](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/repne_reply_draft.md).
+**Full report**: [FINAL_REPORT.md](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/FINAL_REPORT.md). **Production-incident post-mortem**: [§ Production Incident](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/FINAL_REPORT.md#production-incident-2026-05-12-mtp--use_local_argmax_reduction-incompatibility). **Repne bug report draft**: [repne_reply_draft.md](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/repne_reply_draft.md).
 
 ---
 

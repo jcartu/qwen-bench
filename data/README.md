@@ -17,6 +17,10 @@ ground truth and file an issue.
 | `2026-05-day1-sprint.csv` | [`qwen36-27b-blackwell-inference-study`](https://github.com/jcartu/qwen36-27b-blackwell-inference-study) | 328 |
 | `2026-05-day2-stress-validation.csv` | [`qwen36-27b-blackwell-stress-validation`](https://github.com/jcartu/qwen36-27b-blackwell-stress-validation) | 5 |
 | `2026-05-dflash-v2-sweep.csv` | [`qwen-bench-2026-05-dflash-v2-sweep`](https://github.com/jcartu/qwen-bench-2026-05-dflash-v2-sweep) | 15 |
+| `2026-05-11-v2-followup.csv` | [`qwen-bench-2026-05-11-v2-followup`](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) | 4 |
+| `2026-05-12-v3-suite.csv` | [`qwen-bench-2026-05-12-v3-suite`](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite) | 4 |
+
+> The `2026-05-12-v3-suite.csv` `production_status` column captures the post-bench leak-probe verdict per config (DEPLOYED-PRODUCTION-SOTA, DO-NOT-DEPLOY-think-token-leak, benchmark-only). Full per-trial leak-probe artifacts (JSONL + summary.json) live under [`leak-runs/`](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/tree/main/leak-runs) in the study repo — they are not benchmark grid measurements and are kept outside this CSV by design.
 
 ## Schema notes
 
