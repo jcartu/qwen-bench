@@ -1,0 +1,39 @@
+{
+  "label": "F2-unbounded",
+  "overrides": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "top_k": 20
+  },
+  "max_tokens": 16384,
+  "by_concurrency": {
+    "c=1": {
+      "n": 10,
+      "n_errors": 0,
+      "wall_s": 409.0,
+      "pass_rate": 0.8,
+      "stuck_rate": 0.1,
+      "p50_latency_s": 31.57,
+      "p95_latency_s": 130.76,
+      "max_latency_s": 130.76,
+      "median_reasoning_len": 14424,
+      "max_reasoning_len": 51336,
+      "median_content_len": 892,
+      "throughput_req_per_s": 0.024
+    },
+    "c=4": {
+      "n": 10,
+      "n_errors": 0,
+      "wall_s": 142.0,
+      "pass_rate": 0.8,
+      "stuck_rate": 0.0,
+      "p50_latency_s": 38.56,
+      "p95_latency_s": 64.81,
+      "max_latency_s": 64.81,
+      "median_reasoning_len": 16684,
+      "max_reasoning_len": 27843,
+      "median_content_len": 982,
+      "throughput_req_per_s": 0.07
+    }
+  }
+}

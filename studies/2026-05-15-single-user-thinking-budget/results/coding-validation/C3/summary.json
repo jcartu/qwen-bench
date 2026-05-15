@@ -1,0 +1,56 @@
+{
+  "label": "C3",
+  "overrides": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "top_k": 20,
+    "thinking_token_budget": 8192
+  },
+  "max_tokens": 16384,
+  "wall_s": 466.6,
+  "by_problem": {
+    "zigzag": {
+      "n": 2,
+      "pass_rate": 1.0,
+      "stuck_rate": 0.0,
+      "median_lat_s": 10.52,
+      "median_reasoning_len": 4538,
+      "max_reasoning_len": 4538
+    },
+    "min_window": {
+      "n": 2,
+      "pass_rate": 0.0,
+      "stuck_rate": 0.0,
+      "median_lat_s": 46.44,
+      "median_reasoning_len": 18659,
+      "max_reasoning_len": 18659
+    },
+    "median_2sorted": {
+      "n": 2,
+      "pass_rate": 1.0,
+      "stuck_rate": 0.0,
+      "median_lat_s": 59.39,
+      "median_reasoning_len": 21898,
+      "max_reasoning_len": 21898
+    },
+    "lru_cache": {
+      "n": 2,
+      "pass_rate": 1.0,
+      "stuck_rate": 0.0,
+      "median_lat_s": 73.98,
+      "median_reasoning_len": 31021,
+      "max_reasoning_len": 31021
+    },
+    "word_ladder": {
+      "n": 2,
+      "pass_rate": 1.0,
+      "stuck_rate": 0.0,
+      "median_lat_s": 75.98,
+      "median_reasoning_len": 30198,
+      "max_reasoning_len": 30198
+    }
+  },
+  "overall_pass_rate": 0.8,
+  "overall_stuck_rate": 0.0,
+  "n_errors": 0
+}

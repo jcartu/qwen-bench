@@ -1,0 +1,59 @@
+{
+  "label": "C4",
+  "overrides": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "top_k": 20,
+    "presence_penalty": 1.5,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    }
+  },
+  "max_tokens": 16384,
+  "wall_s": 28.6,
+  "by_problem": {
+    "zigzag": {
+      "n": 2,
+      "pass_rate": 1.0,
+      "stuck_rate": 0.0,
+      "median_lat_s": 0.55,
+      "median_reasoning_len": 0,
+      "max_reasoning_len": 0
+    },
+    "min_window": {
+      "n": 2,
+      "pass_rate": 0.0,
+      "stuck_rate": 0.0,
+      "median_lat_s": 2.25,
+      "median_reasoning_len": 0,
+      "max_reasoning_len": 0
+    },
+    "median_2sorted": {
+      "n": 2,
+      "pass_rate": 1.0,
+      "stuck_rate": 0.0,
+      "median_lat_s": 3.52,
+      "median_reasoning_len": 0,
+      "max_reasoning_len": 0
+    },
+    "lru_cache": {
+      "n": 2,
+      "pass_rate": 0.5,
+      "stuck_rate": 0.0,
+      "median_lat_s": 6.69,
+      "median_reasoning_len": 0,
+      "max_reasoning_len": 0
+    },
+    "word_ladder": {
+      "n": 2,
+      "pass_rate": 1.0,
+      "stuck_rate": 0.0,
+      "median_lat_s": 1.5,
+      "median_reasoning_len": 0,
+      "max_reasoning_len": 0
+    }
+  },
+  "overall_pass_rate": 0.7,
+  "overall_stuck_rate": 0.0,
+  "n_errors": 0
+}
