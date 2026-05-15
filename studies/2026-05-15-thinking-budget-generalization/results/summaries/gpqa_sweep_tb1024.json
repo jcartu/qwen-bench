@@ -1,0 +1,60 @@
+{
+  "benchmark": "gpqa",
+  "condition": "tb1024",
+  "n_trials": 198,
+  "n_errors": 0,
+  "accuracy": 0.7727,
+  "stuck_rate": 0.0253,
+  "latency": {
+    "p50_s": 20.469,
+    "p95_s": 115.031,
+    "p99_s": 179.494,
+    "mean_s": 31.594,
+    "max_s": 185.172
+  },
+  "completion_tokens": {
+    "p50": 1874.5,
+    "p95": 10209.3,
+    "mean": 2892.4,
+    "max": 16384
+  },
+  "reasoning_tokens": {
+    "p50": null,
+    "p95": null,
+    "mean": null,
+    "max": null
+  },
+  "by_domain": {
+    "Biology": {
+      "n": 19,
+      "ok": 12,
+      "err": 0,
+      "acc": 0.6316
+    },
+    "Chemistry": {
+      "n": 93,
+      "ok": 61,
+      "err": 0,
+      "acc": 0.6559
+    },
+    "Physics": {
+      "n": 86,
+      "ok": 80,
+      "err": 0,
+      "acc": 0.9302
+    }
+  },
+  "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+  "model": "Qwen3.6-27B",
+  "thinking_token_budget": 1024,
+  "max_tokens": 16384,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "top_k": 20,
+  "repetition_penalty": 1.05,
+  "concurrency": 8,
+  "dataset_name": "gpqa_diamond_official",
+  "n_loaded": 198,
+  "elapsed_s": 900.0,
+  "started_at": "2026-05-15T14:08:06Z"
+}

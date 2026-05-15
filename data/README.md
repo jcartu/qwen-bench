@@ -69,3 +69,5 @@ print(day2.sort_values("humaneval_pct", ascending=False))
 # Thinking-budget winner
 print(thinking.sort_values(["stuck_rate", "p95_latency_s"], na_position="last").head())
 ```
+
+| `2026-05-15-thinking-budget-generalization.csv` | 2026-05-15 | Cross-domain `thinking_token_budget=2048` vs unbounded on Qwen3.6-27B FP8+MTP=3 on `repne/vllm:v3`. GPQA Diamond + GSM-Plus 2k + MMLU-Pro 1.4k + GPQA budget sweep at tb={1024,4096,8192}. 3,598 trials. | [study](../studies/2026-05-15-thinking-budget-generalization/) |

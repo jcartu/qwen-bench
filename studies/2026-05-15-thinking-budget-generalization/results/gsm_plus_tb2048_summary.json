@@ -1,0 +1,90 @@
+{
+  "benchmark": "gsm_plus",
+  "condition": "tb2048",
+  "n_trials": 2000,
+  "n_errors": 0,
+  "accuracy": 0.8075,
+  "stuck_rate": 0.033,
+  "latency": {
+    "p50_s": 22.173,
+    "p95_s": 73.973,
+    "p99_s": 195.611,
+    "mean_s": 28.015,
+    "max_s": 215.482
+  },
+  "completion_tokens": {
+    "p50": 2183.0,
+    "p95": 6603.9,
+    "mean": 2559.6,
+    "max": 16384
+  },
+  "reasoning_tokens": {
+    "p50": null,
+    "p95": null,
+    "mean": null,
+    "max": null
+  },
+  "by_domain": {
+    "numerical substitution": {
+      "n": 250,
+      "ok": 223,
+      "err": 0,
+      "acc": 0.892
+    },
+    "adding operation": {
+      "n": 250,
+      "ok": 212,
+      "err": 0,
+      "acc": 0.848
+    },
+    "digit expansion": {
+      "n": 250,
+      "ok": 235,
+      "err": 0,
+      "acc": 0.94
+    },
+    "integer-decimal-fraction conversion": {
+      "n": 250,
+      "ok": 241,
+      "err": 0,
+      "acc": 0.964
+    },
+    "reversing operation": {
+      "n": 250,
+      "ok": 226,
+      "err": 0,
+      "acc": 0.904
+    },
+    "problem understanding": {
+      "n": 250,
+      "ok": 241,
+      "err": 0,
+      "acc": 0.964
+    },
+    "critical thinking": {
+      "n": 250,
+      "ok": 0,
+      "err": 0,
+      "acc": 0.0
+    },
+    "distraction insertion": {
+      "n": 250,
+      "ok": 237,
+      "err": 0,
+      "acc": 0.948
+    }
+  },
+  "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+  "model": "Qwen3.6-27B",
+  "thinking_token_budget": 2048,
+  "max_tokens": 16384,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "top_k": 20,
+  "repetition_penalty": 1.05,
+  "concurrency": 8,
+  "dataset_name": "gsm_plus_stratified",
+  "n_loaded": 2000,
+  "elapsed_s": 7110.7,
+  "started_at": "2026-05-15T02:34:13Z"
+}

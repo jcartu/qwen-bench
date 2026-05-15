@@ -1,0 +1,803 @@
+{
+  "runs": {
+    "gpqa": {
+      "tb2048": {
+        "benchmark": "gpqa",
+        "condition": "tb2048",
+        "n_trials": 198,
+        "n_errors": 0,
+        "accuracy": 0.7424,
+        "stuck_rate": 0.0303,
+        "latency": {
+          "p50_s": 31.184,
+          "p95_s": 104.616,
+          "p99_s": 189.087,
+          "mean_s": 39.769,
+          "max_s": 195.4
+        },
+        "completion_tokens": {
+          "p50": 2831.0,
+          "p95": 9216.9,
+          "mean": 3561.5,
+          "max": 16384
+        },
+        "reasoning_tokens": {
+          "p50": null,
+          "p95": null,
+          "mean": null,
+          "max": null
+        },
+        "by_domain": {
+          "Physics": {
+            "n": 86,
+            "ok": 75,
+            "err": 0,
+            "acc": 0.8721
+          },
+          "Chemistry": {
+            "n": 93,
+            "ok": 59,
+            "err": 0,
+            "acc": 0.6344
+          },
+          "Biology": {
+            "n": 19,
+            "ok": 13,
+            "err": 0,
+            "acc": 0.6842
+          }
+        },
+        "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+        "model": "Qwen3.6-27B",
+        "thinking_token_budget": 2048,
+        "max_tokens": 16384,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "repetition_penalty": 1.05,
+        "concurrency": 8,
+        "dataset_name": "gpqa_diamond_official",
+        "n_loaded": 198,
+        "elapsed_s": 1001.2,
+        "started_at": "2026-05-15T01:07:32Z"
+      },
+      "unbounded": {
+        "benchmark": "gpqa",
+        "condition": "unbounded",
+        "n_trials": 198,
+        "n_errors": 0,
+        "accuracy": 0.404,
+        "stuck_rate": 0.5707,
+        "latency": {
+          "p50_s": 196.905,
+          "p95_s": 222.192,
+          "p99_s": 228.123,
+          "mean_s": 166.201,
+          "max_s": 233.587
+        },
+        "completion_tokens": {
+          "p50": 16384.0,
+          "p95": 16384.0,
+          "mean": 13059.7,
+          "max": 16384
+        },
+        "reasoning_tokens": {
+          "p50": null,
+          "p95": null,
+          "mean": null,
+          "max": null
+        },
+        "by_domain": {
+          "Biology": {
+            "n": 19,
+            "ok": 7,
+            "err": 0,
+            "acc": 0.3684
+          },
+          "Physics": {
+            "n": 86,
+            "ok": 51,
+            "err": 0,
+            "acc": 0.593
+          },
+          "Chemistry": {
+            "n": 93,
+            "ok": 22,
+            "err": 0,
+            "acc": 0.2366
+          }
+        },
+        "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+        "model": "Qwen3.6-27B",
+        "thinking_token_budget": null,
+        "max_tokens": 16384,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "repetition_penalty": 1.05,
+        "concurrency": 8,
+        "dataset_name": "gpqa_diamond_official",
+        "n_loaded": 198,
+        "elapsed_s": 4192.8,
+        "started_at": "2026-05-15T01:24:17Z"
+      }
+    },
+    "gpqa_sweep": {
+      "tb1024": {
+        "benchmark": "gpqa",
+        "condition": "tb1024",
+        "n_trials": 198,
+        "n_errors": 0,
+        "accuracy": 0.7727,
+        "stuck_rate": 0.0253,
+        "latency": {
+          "p50_s": 20.469,
+          "p95_s": 115.031,
+          "p99_s": 179.494,
+          "mean_s": 31.594,
+          "max_s": 185.172
+        },
+        "completion_tokens": {
+          "p50": 1874.5,
+          "p95": 10209.3,
+          "mean": 2892.4,
+          "max": 16384
+        },
+        "reasoning_tokens": {
+          "p50": null,
+          "p95": null,
+          "mean": null,
+          "max": null
+        },
+        "by_domain": {
+          "Biology": {
+            "n": 19,
+            "ok": 12,
+            "err": 0,
+            "acc": 0.6316
+          },
+          "Chemistry": {
+            "n": 93,
+            "ok": 61,
+            "err": 0,
+            "acc": 0.6559
+          },
+          "Physics": {
+            "n": 86,
+            "ok": 80,
+            "err": 0,
+            "acc": 0.9302
+          }
+        },
+        "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+        "model": "Qwen3.6-27B",
+        "thinking_token_budget": 1024,
+        "max_tokens": 16384,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "repetition_penalty": 1.05,
+        "concurrency": 8,
+        "dataset_name": "gpqa_diamond_official",
+        "n_loaded": 198,
+        "elapsed_s": 900.0,
+        "started_at": "2026-05-15T14:08:06Z"
+      },
+      "tb4096": {
+        "benchmark": "gpqa",
+        "condition": "tb4096",
+        "n_trials": 198,
+        "n_errors": 0,
+        "accuracy": 0.7828,
+        "stuck_rate": 0.0354,
+        "latency": {
+          "p50_s": 54.123,
+          "p95_s": 98.732,
+          "p99_s": 193.699,
+          "mean_s": 60.093,
+          "max_s": 197.261
+        },
+        "completion_tokens": {
+          "p50": 4774.0,
+          "p95": 8337.0,
+          "mean": 5256.9,
+          "max": 16384
+        },
+        "reasoning_tokens": {
+          "p50": null,
+          "p95": null,
+          "mean": null,
+          "max": null
+        },
+        "by_domain": {
+          "Biology": {
+            "n": 19,
+            "ok": 12,
+            "err": 0,
+            "acc": 0.6316
+          },
+          "Physics": {
+            "n": 86,
+            "ok": 79,
+            "err": 0,
+            "acc": 0.9186
+          },
+          "Chemistry": {
+            "n": 93,
+            "ok": 64,
+            "err": 0,
+            "acc": 0.6882
+          }
+        },
+        "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+        "model": "Qwen3.6-27B",
+        "thinking_token_budget": 4096,
+        "max_tokens": 16384,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "repetition_penalty": 1.05,
+        "concurrency": 8,
+        "dataset_name": "gpqa_diamond_official",
+        "n_loaded": 198,
+        "elapsed_s": 1511.3,
+        "started_at": "2026-05-15T14:23:09Z"
+      },
+      "tb8192": {
+        "benchmark": "gpqa",
+        "condition": "tb8192",
+        "n_trials": 198,
+        "n_errors": 0,
+        "accuracy": 0.7828,
+        "stuck_rate": 0.0253,
+        "latency": {
+          "p50_s": 110.519,
+          "p95_s": 128.886,
+          "p99_s": 215.513,
+          "mean_s": 106.353,
+          "max_s": 227.95
+        },
+        "completion_tokens": {
+          "p50": 8814.5,
+          "p95": 9890.8,
+          "mean": 8402.6,
+          "max": 16384
+        },
+        "reasoning_tokens": {
+          "p50": null,
+          "p95": null,
+          "mean": null,
+          "max": null
+        },
+        "by_domain": {
+          "Biology": {
+            "n": 19,
+            "ok": 13,
+            "err": 0,
+            "acc": 0.6842
+          },
+          "Physics": {
+            "n": 86,
+            "ok": 78,
+            "err": 0,
+            "acc": 0.907
+          },
+          "Chemistry": {
+            "n": 93,
+            "ok": 64,
+            "err": 0,
+            "acc": 0.6882
+          }
+        },
+        "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+        "model": "Qwen3.6-27B",
+        "thinking_token_budget": 8192,
+        "max_tokens": 16384,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "repetition_penalty": 1.05,
+        "concurrency": 8,
+        "dataset_name": "gpqa_diamond_official",
+        "n_loaded": 198,
+        "elapsed_s": 2677.6,
+        "started_at": "2026-05-15T14:48:24Z"
+      }
+    },
+    "gsm_plus": {
+      "tb2048": {
+        "benchmark": "gsm_plus",
+        "condition": "tb2048",
+        "n_trials": 2000,
+        "n_errors": 0,
+        "accuracy": 0.8075,
+        "stuck_rate": 0.033,
+        "latency": {
+          "p50_s": 22.173,
+          "p95_s": 73.973,
+          "p99_s": 195.611,
+          "mean_s": 28.015,
+          "max_s": 215.482
+        },
+        "completion_tokens": {
+          "p50": 2183.0,
+          "p95": 6603.9,
+          "mean": 2559.6,
+          "max": 16384
+        },
+        "reasoning_tokens": {
+          "p50": null,
+          "p95": null,
+          "mean": null,
+          "max": null
+        },
+        "by_domain": {
+          "numerical substitution": {
+            "n": 250,
+            "ok": 223,
+            "err": 0,
+            "acc": 0.892
+          },
+          "adding operation": {
+            "n": 250,
+            "ok": 212,
+            "err": 0,
+            "acc": 0.848
+          },
+          "digit expansion": {
+            "n": 250,
+            "ok": 235,
+            "err": 0,
+            "acc": 0.94
+          },
+          "integer-decimal-fraction conversion": {
+            "n": 250,
+            "ok": 241,
+            "err": 0,
+            "acc": 0.964
+          },
+          "reversing operation": {
+            "n": 250,
+            "ok": 226,
+            "err": 0,
+            "acc": 0.904
+          },
+          "problem understanding": {
+            "n": 250,
+            "ok": 241,
+            "err": 0,
+            "acc": 0.964
+          },
+          "critical thinking": {
+            "n": 250,
+            "ok": 0,
+            "err": 0,
+            "acc": 0.0
+          },
+          "distraction insertion": {
+            "n": 250,
+            "ok": 237,
+            "err": 0,
+            "acc": 0.948
+          }
+        },
+        "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+        "model": "Qwen3.6-27B",
+        "thinking_token_budget": 2048,
+        "max_tokens": 16384,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "repetition_penalty": 1.05,
+        "concurrency": 8,
+        "dataset_name": "gsm_plus_stratified",
+        "n_loaded": 2000,
+        "elapsed_s": 7110.7,
+        "started_at": "2026-05-15T02:34:13Z"
+      },
+      "unbounded": {
+        "benchmark": "gsm_plus",
+        "condition": "unbounded",
+        "n_trials": 2000,
+        "n_errors": 0,
+        "accuracy": 0.7965,
+        "stuck_rate": 0.116,
+        "latency": {
+          "p50_s": 24.028,
+          "p95_s": 198.013,
+          "p99_s": 206.436,
+          "mean_s": 53.829,
+          "max_s": 215.848
+        },
+        "completion_tokens": {
+          "p50": 2214.0,
+          "p95": 16384.0,
+          "mean": 4643.4,
+          "max": 16384
+        },
+        "reasoning_tokens": {
+          "p50": null,
+          "p95": null,
+          "mean": null,
+          "max": null
+        },
+        "by_domain": {
+          "numerical substitution": {
+            "n": 250,
+            "ok": 221,
+            "err": 0,
+            "acc": 0.884
+          },
+          "problem understanding": {
+            "n": 250,
+            "ok": 238,
+            "err": 0,
+            "acc": 0.952
+          },
+          "integer-decimal-fraction conversion": {
+            "n": 250,
+            "ok": 241,
+            "err": 0,
+            "acc": 0.964
+          },
+          "distraction insertion": {
+            "n": 250,
+            "ok": 233,
+            "err": 0,
+            "acc": 0.932
+          },
+          "digit expansion": {
+            "n": 250,
+            "ok": 234,
+            "err": 0,
+            "acc": 0.936
+          },
+          "adding operation": {
+            "n": 250,
+            "ok": 203,
+            "err": 0,
+            "acc": 0.812
+          },
+          "reversing operation": {
+            "n": 250,
+            "ok": 223,
+            "err": 0,
+            "acc": 0.892
+          },
+          "critical thinking": {
+            "n": 250,
+            "ok": 0,
+            "err": 0,
+            "acc": 0.0
+          }
+        },
+        "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+        "model": "Qwen3.6-27B",
+        "thinking_token_budget": null,
+        "max_tokens": 16384,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "repetition_penalty": 1.05,
+        "concurrency": 8,
+        "dataset_name": "gsm_plus_stratified",
+        "n_loaded": 2000,
+        "elapsed_s": 13525.2,
+        "started_at": "2026-05-15T04:32:49Z"
+      }
+    },
+    "mmlu_pro": {
+      "tb2048": {
+        "benchmark": "mmlu_pro",
+        "condition": "tb2048",
+        "n_trials": 1400,
+        "n_errors": 0,
+        "accuracy": 0.8264,
+        "stuck_rate": 0.0129,
+        "latency": {
+          "p50_s": 27.158,
+          "p95_s": 36.839,
+          "p99_s": 181.942,
+          "mean_s": 28.963,
+          "max_s": 207.963
+        },
+        "completion_tokens": {
+          "p50": 2494.0,
+          "p95": 3297.1,
+          "mean": 2606.8,
+          "max": 16384
+        },
+        "reasoning_tokens": {
+          "p50": null,
+          "p95": null,
+          "mean": null,
+          "max": null
+        },
+        "by_domain": {
+          "business": {
+            "n": 100,
+            "ok": 84,
+            "err": 0,
+            "acc": 0.84
+          },
+          "chemistry": {
+            "n": 100,
+            "ok": 87,
+            "err": 0,
+            "acc": 0.87
+          },
+          "biology": {
+            "n": 100,
+            "ok": 92,
+            "err": 0,
+            "acc": 0.92
+          },
+          "history": {
+            "n": 100,
+            "ok": 81,
+            "err": 0,
+            "acc": 0.81
+          },
+          "philosophy": {
+            "n": 100,
+            "ok": 86,
+            "err": 0,
+            "acc": 0.86
+          },
+          "economics": {
+            "n": 100,
+            "ok": 88,
+            "err": 0,
+            "acc": 0.88
+          },
+          "other": {
+            "n": 100,
+            "ok": 87,
+            "err": 0,
+            "acc": 0.87
+          },
+          "law": {
+            "n": 100,
+            "ok": 68,
+            "err": 0,
+            "acc": 0.68
+          },
+          "psychology": {
+            "n": 100,
+            "ok": 80,
+            "err": 0,
+            "acc": 0.8
+          },
+          "math": {
+            "n": 100,
+            "ok": 91,
+            "err": 0,
+            "acc": 0.91
+          },
+          "engineering": {
+            "n": 100,
+            "ok": 69,
+            "err": 0,
+            "acc": 0.69
+          },
+          "health": {
+            "n": 100,
+            "ok": 73,
+            "err": 0,
+            "acc": 0.73
+          },
+          "physics": {
+            "n": 100,
+            "ok": 88,
+            "err": 0,
+            "acc": 0.88
+          },
+          "computer science": {
+            "n": 100,
+            "ok": 83,
+            "err": 0,
+            "acc": 0.83
+          }
+        },
+        "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+        "model": "Qwen3.6-27B",
+        "thinking_token_budget": 2048,
+        "max_tokens": 16384,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "repetition_penalty": 1.05,
+        "concurrency": 8,
+        "dataset_name": "mmlu_pro_per_cat",
+        "n_loaded": 1400,
+        "elapsed_s": 5074.9,
+        "started_at": "2026-05-15T08:18:18Z"
+      },
+      "unbounded": {
+        "benchmark": "mmlu_pro",
+        "condition": "unbounded",
+        "n_trials": 1400,
+        "n_errors": 0,
+        "accuracy": 0.7314,
+        "stuck_rate": 0.165,
+        "latency": {
+          "p50_s": 69.832,
+          "p95_s": 208.918,
+          "p99_s": 225.046,
+          "mean_s": 90.461,
+          "max_s": 245.64
+        },
+        "completion_tokens": {
+          "p50": 5669.5,
+          "p95": 16384.0,
+          "mean": 7325.6,
+          "max": 16384
+        },
+        "reasoning_tokens": {
+          "p50": null,
+          "p95": null,
+          "mean": null,
+          "max": null
+        },
+        "by_domain": {
+          "biology": {
+            "n": 100,
+            "ok": 88,
+            "err": 0,
+            "acc": 0.88
+          },
+          "other": {
+            "n": 100,
+            "ok": 79,
+            "err": 0,
+            "acc": 0.79
+          },
+          "law": {
+            "n": 100,
+            "ok": 54,
+            "err": 0,
+            "acc": 0.54
+          },
+          "math": {
+            "n": 100,
+            "ok": 76,
+            "err": 0,
+            "acc": 0.76
+          },
+          "health": {
+            "n": 100,
+            "ok": 68,
+            "err": 0,
+            "acc": 0.68
+          },
+          "computer science": {
+            "n": 100,
+            "ok": 73,
+            "err": 0,
+            "acc": 0.73
+          },
+          "philosophy": {
+            "n": 100,
+            "ok": 79,
+            "err": 0,
+            "acc": 0.79
+          },
+          "history": {
+            "n": 100,
+            "ok": 70,
+            "err": 0,
+            "acc": 0.7
+          },
+          "chemistry": {
+            "n": 100,
+            "ok": 75,
+            "err": 0,
+            "acc": 0.75
+          },
+          "psychology": {
+            "n": 100,
+            "ok": 80,
+            "err": 0,
+            "acc": 0.8
+          },
+          "business": {
+            "n": 100,
+            "ok": 80,
+            "err": 0,
+            "acc": 0.8
+          },
+          "physics": {
+            "n": 100,
+            "ok": 72,
+            "err": 0,
+            "acc": 0.72
+          },
+          "economics": {
+            "n": 100,
+            "ok": 81,
+            "err": 0,
+            "acc": 0.81
+          },
+          "engineering": {
+            "n": 100,
+            "ok": 49,
+            "err": 0,
+            "acc": 0.49
+          }
+        },
+        "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+        "model": "Qwen3.6-27B",
+        "thinking_token_budget": null,
+        "max_tokens": 16384,
+        "temperature": 0.6,
+        "top_p": 0.95,
+        "top_k": 20,
+        "repetition_penalty": 1.05,
+        "concurrency": 8,
+        "dataset_name": "mmlu_pro_per_cat",
+        "n_loaded": 1400,
+        "elapsed_s": 15897.1,
+        "started_at": "2026-05-15T09:42:57Z"
+      }
+    }
+  },
+  "pairs": {
+    "gpqa": {
+      "delta_acc_pp": 33.83999999999999,
+      "two_prop_z": 6.807162446569831,
+      "n_unbounded": 198,
+      "k_unbounded": 80,
+      "n_tb2048": 198,
+      "k_tb2048": 147,
+      "unbounded_ci95": [
+        0.33814481706844396,
+        0.47358874033498527
+      ],
+      "tb2048_ci95": [
+        0.6773046207427075,
+        0.7983158658170503
+      ],
+      "p50_lat_ratio": 0.1583707879434245,
+      "p95_lat_ratio": 0.47083603370058325,
+      "p50_tok_ratio": 0.17279052734375
+    },
+    "gsm_plus": {
+      "delta_acc_pp": 1.100000000000001,
+      "two_prop_z": 0.8729169084547651,
+      "n_unbounded": 2000,
+      "k_unbounded": 1593,
+      "n_tb2048": 2000,
+      "k_tb2048": 1615,
+      "unbounded_ci95": [
+        0.778294557146846,
+        0.8135685921160498
+      ],
+      "tb2048_ci95": [
+        0.789637632625366,
+        0.8241833400503185
+      ],
+      "p50_lat_ratio": 0.9227984018644914,
+      "p95_lat_ratio": 0.3735764823521688,
+      "p50_tok_ratio": 0.9859981933152665
+    },
+    "mmlu_pro": {
+      "delta_acc_pp": 9.499999999999996,
+      "two_prop_z": 6.056998963414062,
+      "n_unbounded": 1400,
+      "k_unbounded": 1024,
+      "n_tb2048": 1400,
+      "k_tb2048": 1157,
+      "unbounded_ci95": [
+        0.7076013128619616,
+        0.7539892255577576
+      ],
+      "tb2048_ci95": [
+        0.8057026977068966,
+        0.8453679074098059
+      ],
+      "p50_lat_ratio": 0.3889048000916486,
+      "p95_lat_ratio": 0.17633234091844646,
+      "p50_tok_ratio": 0.4398976982097187
+    }
+  }
+}

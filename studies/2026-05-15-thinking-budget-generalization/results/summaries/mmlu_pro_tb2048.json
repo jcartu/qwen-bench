@@ -1,0 +1,126 @@
+{
+  "benchmark": "mmlu_pro",
+  "condition": "tb2048",
+  "n_trials": 1400,
+  "n_errors": 0,
+  "accuracy": 0.8264,
+  "stuck_rate": 0.0129,
+  "latency": {
+    "p50_s": 27.158,
+    "p95_s": 36.839,
+    "p99_s": 181.942,
+    "mean_s": 28.963,
+    "max_s": 207.963
+  },
+  "completion_tokens": {
+    "p50": 2494.0,
+    "p95": 3297.1,
+    "mean": 2606.8,
+    "max": 16384
+  },
+  "reasoning_tokens": {
+    "p50": null,
+    "p95": null,
+    "mean": null,
+    "max": null
+  },
+  "by_domain": {
+    "business": {
+      "n": 100,
+      "ok": 84,
+      "err": 0,
+      "acc": 0.84
+    },
+    "chemistry": {
+      "n": 100,
+      "ok": 87,
+      "err": 0,
+      "acc": 0.87
+    },
+    "biology": {
+      "n": 100,
+      "ok": 92,
+      "err": 0,
+      "acc": 0.92
+    },
+    "history": {
+      "n": 100,
+      "ok": 81,
+      "err": 0,
+      "acc": 0.81
+    },
+    "philosophy": {
+      "n": 100,
+      "ok": 86,
+      "err": 0,
+      "acc": 0.86
+    },
+    "economics": {
+      "n": 100,
+      "ok": 88,
+      "err": 0,
+      "acc": 0.88
+    },
+    "other": {
+      "n": 100,
+      "ok": 87,
+      "err": 0,
+      "acc": 0.87
+    },
+    "law": {
+      "n": 100,
+      "ok": 68,
+      "err": 0,
+      "acc": 0.68
+    },
+    "psychology": {
+      "n": 100,
+      "ok": 80,
+      "err": 0,
+      "acc": 0.8
+    },
+    "math": {
+      "n": 100,
+      "ok": 91,
+      "err": 0,
+      "acc": 0.91
+    },
+    "engineering": {
+      "n": 100,
+      "ok": 69,
+      "err": 0,
+      "acc": 0.69
+    },
+    "health": {
+      "n": 100,
+      "ok": 73,
+      "err": 0,
+      "acc": 0.73
+    },
+    "physics": {
+      "n": 100,
+      "ok": 88,
+      "err": 0,
+      "acc": 0.88
+    },
+    "computer science": {
+      "n": 100,
+      "ok": 83,
+      "err": 0,
+      "acc": 0.83
+    }
+  },
+  "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+  "model": "Qwen3.6-27B",
+  "thinking_token_budget": 2048,
+  "max_tokens": 16384,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "top_k": 20,
+  "repetition_penalty": 1.05,
+  "concurrency": 8,
+  "dataset_name": "mmlu_pro_per_cat",
+  "n_loaded": 1400,
+  "elapsed_s": 5074.9,
+  "started_at": "2026-05-15T08:18:18Z"
+}

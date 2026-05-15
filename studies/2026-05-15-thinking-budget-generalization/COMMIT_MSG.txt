@@ -1,0 +1,52 @@
+studies: add 2026-05-15 thinking-budget generalization study
+
+Cross-domain evaluation of Qwen3.6-27B FP8 + MTP=3 under two thinking
+budgets (unbounded vs 2048 tokens). Three benchmarks: GPQA Diamond (198),
+GSM-Plus 2k stratified, MMLU-Pro 100/subset (1,400). Plus a four-point
+budget sweep on GPQA (tb=1024/2048/4096/8192) to disambiguate the
+budget-size vs forced-commit confound.
+
+Headline result: thinking_token_budget=2048 strictly Pareto-dominates
+unbounded thinking across all measured benchmarks. On GPQA Diamond,
++33.8 pp accuracy (z=6.81, p=1.0e-11) with 0.16x p50 latency; the
+unbounded condition hits finish_reason=length on 57.1% of items and
+produces zero parseable answers on those. On GSM-Plus, accuracy is a
+statistical tie (Δ=+1.1 pp, p=0.38) but tb=2048 is 1.9x faster wall-
+clock, 2.7x lower p95 latency, and 2.5x lower p95 output tokens.
+
+Mechanism: the budget triggers a MaxThinkTokensLogitsProcessor (vLLM
+#20859) that injects </think> at the budget boundary, forcing the
+model to commit to an answer rather than spiral. The four-point sweep
+distinguishes whether the win comes from budget size or from the
+forced-commit mechanism — see study README for analysis.
+
+Contents:
+- studies/2026-05-15-thinking-budget-generalization/README.md
+  (~230 lines, full analysis with per-domain GPQA table, GSM-Plus
+  per-perturbation table, two-knob analysis, honest caveats)
+- ./results/aggregate.{md,csv,json} with Wilson 95% CIs, two-prop
+  z-scores, and p-values via erfc
+- ./results/raw/*.jsonl raw per-trial JSONLs for reproducibility
+- ./results/summaries/*.json per-run statistical summaries
+- ./scripts/{bench,aggregate,emit_hub_csv,fill_placeholders,apply_frontdoor,publish}.{py,sh}
+  full benchmark harness + publish pipeline
+- ./launchers/{run_fast_phase,run_budget_sweep,launch-qwen36-27b-sota}.sh
+  exact launch scripts as used
+- ./FULL_PHASE_DECISION.md pre-committed re-trigger conditions for
+  full-N runs (decision: not needed; conditions documented for
+  reviewer transparency)
+- ./HUB_FRONTDOOR_EDITS.md template for front-door splicing
+- ./REPNE_REPLY.md reproducer command staged for upstream
+
+Front-door updates: SOTA.md callout near top, STUDIES.md newest-first
+entry, README.md badge + study entry, data/README.md card row. All
+splicing is sentinel-gated and idempotent (apply_frontdoor.py).
+
+Limitations: single seed (42), single model size + quantization
+(27B FP8), MMLU-Pro sampled at 100/category rather than full 12,032
+(decision rationale in FULL_PHASE_DECISION.md), GSM-Plus
+critical_thinking subset excluded due to grader extraction limits
+on "no answer" gold values.
+
+Repne adoption recommendation: set thinking_token_budget=2048 as the
+default for repne/vllm. Reproduce command in REPNE_REPLY.md.

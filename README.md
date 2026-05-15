@@ -6,7 +6,7 @@
 
 ### Empirical inference characterization of Qwen models on NVIDIA Blackwell
 
-[![Studies](https://img.shields.io/badge/studies-10_published-success?style=for-the-badge)](STUDIES.md)
+[![Studies](https://img.shields.io/badge/studies-11_published-success?style=for-the-badge)](STUDIES.md)
 [![SOTA](https://img.shields.io/badge/SOTA-tracker-blue?style=for-the-badge)](SOTA.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![Topic: qwen](https://img.shields.io/badge/topic-qwen-orange?style=for-the-badge)](https://github.com/topics/qwen)
@@ -115,6 +115,11 @@ and [LEAK_DETECTION.md](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite
 </div>
 
 Each study is a self-contained satellite repo or hub-native production addendum. Studies are listed newest-first.
+
+### 📖 2026-05 · Thinking-budget generalization study
+**[`studies/2026-05-15-thinking-budget-generalization`](studies/2026-05-15-thinking-budget-generalization/)** · *cross-domain validation · GPQA Diamond / GSM-Plus 2k / MMLU-Pro 1.4k · 3,598 trials · GPQA budget sweep*
+
+Repne challenge: prove `thinking_token_budget=2048` generalizes beyond the morning's coding probes. Result: strict Pareto improvement on every benchmark. **GPQA +33.8 pp accuracy at 0.24× wall** (z=6.81, p=1e-11; 57.1% of unbounded responses never emit an answer because they bump into `finish_reason=length` inside `<think>`). **GSM-Plus accuracy parity at 0.53× wall, 2.5× tighter p95 token tail.** **MMLU-Pro Δ +9.5 pp accuracy at 0.39× wall.** GPQA budget sweep at tb ∈ {1024, 2048, 4096, 8192} shows peak at tb=4096 → sweet spot exists.
 
 ### 📖 2026-05 · Single-user thinking-budget addendum
 **[`studies/2026-05-15-single-user-thinking-budget`](studies/2026-05-15-single-user-thinking-budget/)** · *client-side hard thinking budget · 5-problem coding probe · c=1/2/4/8 fanout sweep*

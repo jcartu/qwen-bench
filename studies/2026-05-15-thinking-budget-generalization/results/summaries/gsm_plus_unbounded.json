@@ -1,0 +1,90 @@
+{
+  "benchmark": "gsm_plus",
+  "condition": "unbounded",
+  "n_trials": 2000,
+  "n_errors": 0,
+  "accuracy": 0.7965,
+  "stuck_rate": 0.116,
+  "latency": {
+    "p50_s": 24.028,
+    "p95_s": 198.013,
+    "p99_s": 206.436,
+    "mean_s": 53.829,
+    "max_s": 215.848
+  },
+  "completion_tokens": {
+    "p50": 2214.0,
+    "p95": 16384.0,
+    "mean": 4643.4,
+    "max": 16384
+  },
+  "reasoning_tokens": {
+    "p50": null,
+    "p95": null,
+    "mean": null,
+    "max": null
+  },
+  "by_domain": {
+    "numerical substitution": {
+      "n": 250,
+      "ok": 221,
+      "err": 0,
+      "acc": 0.884
+    },
+    "problem understanding": {
+      "n": 250,
+      "ok": 238,
+      "err": 0,
+      "acc": 0.952
+    },
+    "integer-decimal-fraction conversion": {
+      "n": 250,
+      "ok": 241,
+      "err": 0,
+      "acc": 0.964
+    },
+    "distraction insertion": {
+      "n": 250,
+      "ok": 233,
+      "err": 0,
+      "acc": 0.932
+    },
+    "digit expansion": {
+      "n": 250,
+      "ok": 234,
+      "err": 0,
+      "acc": 0.936
+    },
+    "adding operation": {
+      "n": 250,
+      "ok": 203,
+      "err": 0,
+      "acc": 0.812
+    },
+    "reversing operation": {
+      "n": 250,
+      "ok": 223,
+      "err": 0,
+      "acc": 0.892
+    },
+    "critical thinking": {
+      "n": 250,
+      "ok": 0,
+      "err": 0,
+      "acc": 0.0
+    }
+  },
+  "endpoint": "http://127.0.0.1:11435/v1/chat/completions",
+  "model": "Qwen3.6-27B",
+  "thinking_token_budget": null,
+  "max_tokens": 16384,
+  "temperature": 0.6,
+  "top_p": 0.95,
+  "top_k": 20,
+  "repetition_penalty": 1.05,
+  "concurrency": 8,
+  "dataset_name": "gsm_plus_stratified",
+  "n_loaded": 2000,
+  "elapsed_s": 13525.2,
+  "started_at": "2026-05-15T04:32:49Z"
+}

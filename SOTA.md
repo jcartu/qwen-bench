@@ -13,6 +13,16 @@ The cross-study record book. Every claim here is reproducible from raw
 
 > 🆕 **2026-05-15 single-user update**: For OpenCode coding on the deployed `FP8+MTP=3` v3 stack, client-side `thinking_token_budget=2048` is now the recommended default. It preserves thinking mode, improves the c=1 budget sweep from 70% to 80% pass, eliminates stuck responses (10% → 0%), and in the matched concurrency probe cuts unbounded c=1 p95 latency from 130.8s to 19.6s. See [single-user addendum][singleuser].
 
+> 🧪 **2026-05-15 generalization (evening)**: Cross-domain validation of `thinking_token_budget=2048`
+> on three out-of-distribution academic benchmarks (3,598 trials total) confirms it as a **strict
+> Pareto improvement** over unbounded thinking on Qwen3.6-27B FP8 + MTP=3 + `repne/vllm:v3`.
+> Headline: **GPQA Diamond +33.8 pp accuracy (z=6.81, p=1e-11) at 0.24× wall-clock**;
+> **GSM-Plus 2k accuracy parity (z=0.87, p=0.38) at 0.53× wall-clock**; **MMLU-Pro 73.1% → **82.6%** (Δ +9.5 pp, z=6.06, p=1.4e-09) at 0.39× wall**.
+> Failure mechanism on hard reasoning is documented: 57.1% of GPQA unbounded responses hit
+> `finish_reason=length` while still inside `<think>`, emitting **zero** extractable answers.
+> Budget-sweep on GPQA at tb ∈ {1024, 2048, 4096, 8192} shows accuracy peaks at tb=4096 (acc=78.3%) → there is a **genuine sweet spot** in budget choice.
+> Full study: [`studies/2026-05-15-thinking-budget-generalization`](studies/2026-05-15-thinking-budget-generalization/).
+
 > 🆕 **2026-05-12 v3 update**: Repne shipped [`repne/vllm:v3`](https://hub.docker.com/r/repne/vllm). Full 4-config stress-validation suite re-run on it ([study repo][v3suite]) plus a same-day production-rollout post-mortem produced three updates: (i) **`FP8+MTP=3` on `:v3` is the new production SOTA** — 88.4 % HE, 89.1 % MBPP, 369 tok/s peak, 0 length-trunc, currently deployed; (ii) **MTP=5 is benchmark-only** — it scored 93.3 % HE in the offline harness but leaks raw `<think>...</think>` blocks into the OpenAI `content` field on production traffic, so its quality lead is harness-counting-noise, not real downstream code; (iii) **MTP=3 is validated leak-free at 420 trials** across plain-chat (300 @ T=0.7) AND realistic tool/function-calling (120 @ T=0.7, 95 % real tool-call rate, multi-tool responses included) by the new permanent dual-mode leak probe (`harness/leak_probe.py` in the v3 study repo). See [`v3suite/FINAL_REPORT.md` § Production Incident][v3incident] and [`v3suite/LEAK_DETECTION.md`](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/LEAK_DETECTION.md).
 
 

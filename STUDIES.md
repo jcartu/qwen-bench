@@ -7,6 +7,48 @@ For the merged machine-readable result tables, see [`data/`](data/).
 
 ---
 
+## 2026-05-15 · Thinking-budget generalization study (evening)
+
+**Repo:** hub-native study at [`studies/2026-05-15-thinking-budget-generalization`](studies/2026-05-15-thinking-budget-generalization/)
+**Trigger:** Repne (engine maintainer) asked whether the `thinking_token_budget=2048` default
+from the morning's single-user rollout would generalize beyond coding probes to public reasoning
+benchmarks before he adopts it as the `repne/vllm` default.
+**Hardware:** 2× NVIDIA RTX PRO 6000 Blackwell (TP=2, GPUs 0+1; GPU 2 reserved for Hindsight, untouched)
+**Server:** `repne/vllm:v3` (`vllm-0.1.dev16595+gebc3d9d1b`), `Qwen/Qwen3.6-27B-FP8`, MTP=3,
+FlashInfer, InstantTensor, 256k context
+**Datasets (all public):** `Idavidrein/gpqa@gpqa_diamond` (198 q, gated, accepted),
+`qintongli/GSM-Plus` (2,000 stratified across 8 perturbation types), `TIGER-Lab/MMLU-Pro`
+(1,400 = 100/category × 14 categories)
+**Conditions per benchmark:** C0 unbounded thinking @ `max_tokens=16384`; C1 `thinking_token_budget=2048`.
+GPQA also adds a budget sweep at tb ∈ {1024, 4096, 8192}.
+
+### Abstract
+
+`thinking_token_budget=2048` is a **strict Pareto improvement** over unbounded thinking on
+Qwen3.6-27B FP8 + MTP=3 across every benchmark tested:
+
+- **GPQA Diamond**: 40.4% → **74.2%** accuracy (+33.8 pp, z=6.81, p=1e-11); 196.9s → 31.2s p50 latency.
+  57.1% of unbounded responses hit `finish_reason=length` inside `<think>` and emit zero answer.
+- **GSM-Plus 2k**: 79.6% → **80.8%** accuracy (+1.1 pp, NS); but **1.9× faster wall-clock**,
+  **2.7× tighter p95 latency**, **2.5× tighter p95 token tail**, stuck rate 11.6% → 3.3%.
+- **MMLU-Pro**: 73.1% → **82.6%** accuracy (+9.5 pp, z=6.06, p=1.4e-09); 69.8s → 27.2s p50 latency; stuck rate 16.5% → 1.3%.
+
+A GPQA budget sweep at tb ∈ {1024, 2048, 4096, 8192} shows accuracy peaks at tb=4096 (acc=78.3%) → there is a **genuine sweet spot** in budget choice, disambiguating
+the "forced-commit-mechanism vs budget-size" confound inherent in the two-condition design.
+
+The mechanism is the same one [PR #20859](https://github.com/vllm-project/vllm/pull/20859)
+shipped (`MaxThinkTokensLogitsProcessor`): forcing `</think>` insertion at the budget boundary
+guarantees answer emission, whereas unbounded responses just bump into `finish_reason=length`
+and return mid-thought fragments. This is the same mechanism the **morning single-user
+study** ([`2026-05-15-single-user-thinking-budget`](studies/2026-05-15-single-user-thinking-budget/))
+established on 30 internal coding probes; the present study confirms it generalizes to public
+reasoning benchmarks with N=3,598 trials.
+
+**Recommendation:** `thinking_token_budget=2048` should be the default for thinking-capable
+Qwen3.6 models in `repne/vllm`. Server-side default flag is missing in upstream vLLM
+(`--default-chat-template-kwargs` doesn't yet learn `thinking_token_budget`) — currently
+hardcoded client-side in OpenCode.
+
 ## 2026-05-15 · Single-user thinking-budget addendum — OpenCode production tuning
 
 **Repo:** hub-native addendum at [`studies/2026-05-15-single-user-thinking-budget`](studies/2026-05-15-single-user-thinking-budget/)
