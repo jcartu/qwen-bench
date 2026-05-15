@@ -19,6 +19,7 @@ ground truth and file an issue.
 | `2026-05-dflash-v2-sweep.csv` | [`qwen-bench-2026-05-dflash-v2-sweep`](https://github.com/jcartu/qwen-bench-2026-05-dflash-v2-sweep) | 15 |
 | `2026-05-11-v2-followup.csv` | [`qwen-bench-2026-05-11-v2-followup`](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup) | 4 |
 | `2026-05-12-v3-suite.csv` | [`qwen-bench-2026-05-12-v3-suite`](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite) | 4 |
+| `2026-05-15-single-user-thinking-budget.csv` | [`studies/2026-05-15-single-user-thinking-budget`](../studies/2026-05-15-single-user-thinking-budget/) | 11 |
 
 > The `2026-05-12-v3-suite.csv` `production_status` column captures the post-bench leak-probe verdict per config (DEPLOYED-PRODUCTION-SOTA, DO-NOT-DEPLOY-think-token-leak, benchmark-only). Full per-trial leak-probe artifacts (JSONL + summary.json) live under [`leak-runs/`](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/tree/main/leak-runs) in the study repo — they are not benchmark grid measurements and are kept outside this CSV by design.
 
@@ -31,6 +32,13 @@ measure different things:
 ```
 experiment, build, cell, aggregate_tps, ttft_avg_ms, ttft_p99_ms,
 itl_avg_ms, per_user_tps, spec_accept_rate, server_utilization
+```
+
+### `2026-05-15-single-user-thinking-budget.csv` — client-side thinking budget
+```
+phase, condition, config, thinking_enabled, thinking_token_budget, concurrency,
+n, pass_rate, stuck_rate, wall_s, p50_latency_s, p95_latency_s,
+throughput_req_per_s, max_reasoning_chars, notes
 ```
 
 ### `2026-05-day2-stress-validation.csv` — correctness + summary
@@ -50,10 +58,14 @@ the two on `(config, hardware)` keys. For now, query each separately.
 import pandas as pd
 day1 = pd.read_csv("data/2026-05-day1-sprint.csv")
 day2 = pd.read_csv("data/2026-05-day2-stress-validation.csv")
+thinking = pd.read_csv("data/2026-05-15-single-user-thinking-budget.csv")
 
 # Throughput records
 print(day1.nlargest(5, "aggregate_tps")[["experiment", "build", "cell", "aggregate_tps"]])
 
 # Correctness records
 print(day2.sort_values("humaneval_pct", ascending=False))
+
+# Thinking-budget winner
+print(thinking.sort_values(["stuck_rate", "p95_latency_s"], na_position="last").head())
 ```

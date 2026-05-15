@@ -1,0 +1,12 @@
+phase,condition,config,thinking_enabled,thinking_token_budget,concurrency,n,pass_rate,stuck_rate,wall_s,p50_latency_s,p95_latency_s,throughput_req_per_s,max_reasoning_chars,notes
+budget,C0,unbounded,true,,1,10,0.70,0.10,592.5,,,,56424,current SOTA before client-side budget cap
+budget,C1,tb2048,true,2048,1,10,0.80,0.00,171.0,,,,8425,winner; same quality as larger budgets with much lower latency
+budget,C2,tb4096,true,4096,1,10,0.80,0.00,305.8,,,,15858,no quality gain over 2048
+budget,C3,tb8192,true,8192,1,10,0.80,0.00,466.6,,,,31021,no quality gain over 2048; previous OpenCode value
+budget,C4,no-thinking,false,,1,10,0.70,0.00,28.6,,,,0,rejected for coding because user needs thinking enabled
+concurrency,F1,tb2048,true,2048,1,10,0.80,0.00,184.0,18.43,19.57,0.054,8230,latency baseline
+concurrency,F1,tb2048,true,2048,2,10,0.70,0.00,105.8,18.77,29.65,0.095,8230,parallel fanout scales
+concurrency,F1,tb2048,true,2048,4,10,0.70,0.00,70.2,19.52,30.06,0.142,8303,OpenCode-style fanout remains stable
+concurrency,F1,tb2048,true,2048,8,10,0.70,0.00,50.8,19.60,30.32,0.197,8285,no reason to cap below subagent fanout
+concurrency,F2,unbounded,true,,1,10,0.80,0.10,409.0,31.57,130.76,0.024,51336,runaway tail latency
+concurrency,F2,unbounded,true,,4,10,0.80,0.00,142.0,38.56,64.81,0.070,27843,still 2x slower than tb2048 at c=4

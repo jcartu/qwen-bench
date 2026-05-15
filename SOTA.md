@@ -4,25 +4,29 @@ The cross-study record book. Every claim here is reproducible from raw
 `results.json` files in the linked study repos.
 
 > **Scope:** Qwen3.6-27B on **2× NVIDIA RTX PRO 6000 Blackwell** (TP=2, SM120, 96 GB each, PCIe Gen5 x16).
-> **Last updated:** 2026-05-12 (v3 suite — Repne fork upgrade)
+> **Last updated:** 2026-05-15 (single-user thinking-budget addendum)
 > **Methodology:** All studies use shared conventions (see [`README.md` § Methodology](README.md#methodology)).
 
 ---
 
 > ⚠️ **2026-05-11 correction**: A bug in the HumanEval extraction harness (described in the [v2-followup ADDENDUM](https://github.com/jcartu/qwen-bench-2026-05-11-v2-followup/blob/main/ADDENDUM.md)) was deflating reported HumanEval scores by 13–23 percentage points across every prior study. Corrected scores appear in § 2.1 below. Throughput and MBPP records are unaffected.
 
+> 🆕 **2026-05-15 single-user update**: For OpenCode coding on the deployed `FP8+MTP=3` v3 stack, client-side `thinking_token_budget=2048` is now the recommended default. It preserves thinking mode, improves the hard-coding probe from 70% to 80% pass, eliminates stuck responses (10% → 0%), and cuts c=1 p95 latency from 130.8s to 19.6s. See [single-user addendum][singleuser].
+
 > 🆕 **2026-05-12 v3 update**: Repne shipped [`repne/vllm:v3`](https://hub.docker.com/r/repne/vllm). Full 4-config stress-validation suite re-run on it ([study repo][v3suite]) plus a same-day production-rollout post-mortem produced three updates: (i) **`FP8+MTP=3` on `:v3` is the new production SOTA** — 88.4 % HE, 89.1 % MBPP, 369 tok/s peak, 0 length-trunc, currently deployed; (ii) **MTP=5 is benchmark-only** — it scored 93.3 % HE in the offline harness but leaks raw `<think>...</think>` blocks into the OpenAI `content` field on production traffic, so its quality lead is harness-counting-noise, not real downstream code; (iii) **MTP=3 is validated leak-free at 420 trials** across plain-chat (300 @ T=0.7) AND realistic tool/function-calling (120 @ T=0.7, 95 % real tool-call rate, multi-tool responses included) by the new permanent dual-mode leak probe (`harness/leak_probe.py` in the v3 study repo). See [`v3suite/FINAL_REPORT.md` § Production Incident][v3incident] and [`v3suite/LEAK_DETECTION.md`](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/LEAK_DETECTION.md).
 
 
 ## TL;DR
 
-**Production-deployed SOTA (live 2026-05-12 ~10:03 MSK):** **`repne/vllm:v3` + FP8+MTP=3** on the [Repne fork](https://hub.docker.com/r/repne/vllm). 88.4 % HE, 89.1 % MBPP, 369 tok/s peak (c=4 ctx=0), 98 tok/s single-user, 0 length-trunc, reasoning cleanly separated into the OpenAI `reasoning` field.
+**Production-deployed SOTA (live 2026-05-12 ~10:03 MSK):** **`repne/vllm:v3` + FP8+MTP=3** on the [Repne fork](https://hub.docker.com/r/repne/vllm). 88.4 % HE, 89.1 % MBPP, 369 tok/s peak (c=4 ctx=0), 98 tok/s single-user, 0 length-trunc, reasoning cleanly separated into the OpenAI `reasoning` field. OpenCode client requests should add `thinking_token_budget=2048` to prevent runaway thinking tails.
 
 **Benchmark-only — NOT production:** `FP8+MTP=5` scored 93.3 % HE / 402 tok/s peak in the offline harness, but leaks raw `<think>...</think>` blocks into the OpenAI `content` field on production traffic (verified by live smoke test 2026-05-12). The +4.9 pp HE delta vs MTP=3 reflects the harness counting those leaked think blobs as code, not real downstream code quality. **Do not deploy.** See [v3 suite Production Incident][v3incident].
 
 It holds the production-relevant SOTA across throughput, correctness, and
 operational-stability dimensions. `MTP=5` and `BF16+DFlash` variants hold
 isolated records but are dominated where production traffic actually lives (c≥8).
+
+For normal single-user OpenCode coding, **`thinking_token_budget=2048`** is the client-side fix that keeps Qwen3 thinking enabled while cutting c=1 p95 latency 130.8s→19.6s.
 
 For long-context coding-agent workloads (ctx ≥ 64k), **`FP8+DFlash N=8`** is
 the recommended alternative (+5–13 % over `FP8+MTP=3`).
@@ -70,7 +74,7 @@ the recommended alternative (+5–13 % over `FP8+MTP=3`).
 
 **Crossover concurrency: c=8.** Above this, `MTP=3` dominates. Below, `MTP=5`
 has a small advantage. Production traffic on coding agents typically bursts
-to c=16+, which makes `MTP=3` the correct production choice.
+to c=16+, which makes `MTP=3` the correct production choice. For one-user OpenCode fanout, `thinking_token_budget=2048` keeps p50 essentially flat through c=8 (18.4s → 19.6s).
 
 ### 1.3 Long-context throughput records — `FP8+DFlash N=8` wins
 
@@ -139,7 +143,7 @@ Two reportings shown: the harness-bug-affected original numbers (struck through)
 
 Note `FP8+MTP=5` produces **+15 % higher raw effective tok/s** than
 `FP8+MTP=3` but loses HumanEval by **−3.7 pp**. This is the textbook lesson:
-**throughput-on-decode-bench does not predict end-to-end agentic correctness.**
+**throughput-on-decode-bench does not predict end-to-end agentic correctness.** The 2026-05-15 addendum extends that lesson to request sampling: unbounded thinking looked like an engine leak, but the fix was a per-request hard thinking budget, not another engine rollback.
 
 ---
 
@@ -193,6 +197,7 @@ principle that any 8-bit quant near BF16 should also be near BF16's KLD floor.
 | Production-incident finding (v3 rollout) | `use_local_argmax_reduction` is **DFlash-only** — `Qwen3_5MTP` drafter does not implement `get_top_tokens()`, engine refuses to start MTP config with that flag | [v3suite Production Incident][v3incident] |
 | Production-incident finding (v3 rollout) | MTP=5 leaks raw `<think>...</think>` blocks into OpenAI `content` field on production traffic despite 93.3 % offline HE | [v3suite Production Incident][v3incident] |
 | Production-incident finding (v3 rollout) | MTP=3 validated **leak-free at 420 trials** across chat AND tool-calling traffic by permanent dual-mode probe (`harness/leak_probe.py`); MTP=5 leak class appears MTP=5-specific on `:v3` | [v3suite LEAK_DETECTION][v3leak] |
+| Single-user coding stability | `thinking_token_budget=2048` eliminates runaway tails on the hard-coding probe: stuck 10%→0%, pass 70%→80%, c=1 p95 130.8s→19.6s | [single-user addendum][singleuser] |
 
 ---
 
@@ -207,8 +212,8 @@ Need maximum throughput at c≥8 production traffic?
 ├── Yes → FP8+MTP=3 on Repne fork (2,083 tok/s peak; v3 image deployed, leak-free)
 └── No  → continue (single-user / always c≤4)
 
-Always single-user / c=1, deep context (131k+) priority?
-├── Yes → FP8+MTP=3 on `repne/vllm:v3` (98 tok/s c=1×0, clean output). Do NOT use MTP=5 — leaks `<think>` into `content`.
+Always single-user / OpenCode coding priority?
+├── Yes → FP8+MTP=3 on `repne/vllm:v3` + client `thinking_token_budget=2048`. Keep thinking enabled; do NOT use MTP=5 — leaks `<think>` into `content`.
 └── No  → FP8+MTP=3 on Repne fork (still wins majority of cells)
 
 Long-context coding-agent workload (ctx ≥ 64k)?
@@ -250,7 +255,9 @@ This file is the **canonical leaderboard**. Studies are the **canonical evidence
 [v3report]: https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/FINAL_REPORT.md
 [v3incident]: https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/FINAL_REPORT.md#production-incident-2026-05-12-mtp--use_local_argmax_reduction-incompatibility
 [v3leak]: https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite/blob/main/LEAK_DETECTION.md
+[singleuser]: studies/2026-05-15-single-user-thinking-budget/
 
 - **All Qwen3.6-27B Day 1 sprint data** (per-cell N=3 production data, KLD probe, high-concurrency sweep, MTP n-sweep): [`qwen36-27b-blackwell-inference-study`][day1]
 - **All Qwen3.6-27B stress-validation data** (5 configs × HumanEval × MBPP, plus addenda): [`qwen36-27b-blackwell-stress-validation`][day2]
+- **Single-user thinking-budget addendum:** [`studies/2026-05-15-single-user-thinking-budget/`][singleuser]
 - **Merged machine-readable CSVs:** [`data/`](data/) in this hub repo

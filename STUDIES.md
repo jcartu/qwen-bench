@@ -7,6 +7,36 @@ For the merged machine-readable result tables, see [`data/`](data/).
 
 ---
 
+## 2026-05-15 · Single-user thinking-budget addendum — OpenCode production tuning
+
+**Repo:** hub-native addendum at [`studies/2026-05-15-single-user-thinking-budget`](studies/2026-05-15-single-user-thinking-budget/)
+**Trigger:** production OpenCode traffic showed runaway `<think>` reasoning loops on hard coding prompts despite the v3 FP8+MTP=3 engine being leak-free.
+**Hardware:** 2× NVIDIA RTX PRO 6000 Blackwell (TP=2, GPUs 0+1; GPU 2 reserved for Hindsight, untouched)
+**Server:** `repne/vllm:v3` (vllm-0.1.dev16595+gebc3d9d1b), `Qwen/Qwen3.6-27B-FP8`, MTP=3, FlashInfer, InstantTensor, 256k context
+**Configs measured:** unbounded thinking, `thinking_token_budget` ∈ {2048, 4096, 8192}, and no-thinking floor; concurrency c ∈ {1,2,4,8} for the winning budget.
+**Harness:** five hard coding tasks with executable graders plus a parallel-trial fanout variant.
+
+### Abstract
+
+This production addendum separates engine stability from client-side reasoning control. Rolling back between Repne v4 and v3 did not fix the issue: the runaway was a Qwen3 thinking-mode loop under unbounded request budgets, not a parser leak or vLLM engine regression. The vLLM `thinking_token_budget` sampling parameter hard-stops the thinking section by forcing the end-of-thinking token once the budget is exhausted.
+
+### Headline result
+
+- **Winning client config: `thinking_token_budget=2048`** with Qwen3 thinking-coding sampling (`temperature=0.6`, `top_p=0.95`, `top_k=20`).
+- **Quality improved:** 70% → **80%** pass on the hard-coding budget sweep.
+- **Stuck responses eliminated:** 10% → **0%**.
+- **Tail latency collapsed:** c=1 p95 130.8s → **19.6s** (6.7× faster).
+- **Fanout is safe:** p50 stayed essentially flat from c=1 to c=8 (18.4s → 19.6s), so OpenCode subagent parallelism does not need an artificial cap below normal fanout.
+- **Server-side default is unavailable in this vLLM build:** `thinking_token_budget` must be sent per request; `--default-chat-template-kwargs` cannot set it.
+
+### Records broken / clarifications
+
+- First hub-indexed hard-coding benchmark for Qwen3 thinking-budget control.
+- Clarifies that the production v3 FP8+MTP=3 stack remains the right engine choice; the single-user fix is client-side request budgeting plus a smaller production launcher profile.
+- Establishes `2048` as the recommended OpenCode thinking budget for Qwen3.6-27B coding on this stack.
+
+---
+
 ## 2026-05-12 · Qwen3.6-27B Tier-3 v3 full suite — `repne/vllm:v3` validation
 
 **Repo:** [`qwen-bench-2026-05-12-v3-suite`](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite)
@@ -275,4 +305,4 @@ The short version:
 
 ---
 
-*Last updated: 2026-05-12 (Tier-3 v3 suite)*
+*Last updated: 2026-05-15 (single-user thinking-budget addendum)*

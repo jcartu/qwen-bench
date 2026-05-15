@@ -6,7 +6,7 @@
 
 ### Empirical inference characterization of Qwen models on NVIDIA Blackwell
 
-[![Studies](https://img.shields.io/badge/studies-9_published-success?style=for-the-badge)](STUDIES.md)
+[![Studies](https://img.shields.io/badge/studies-10_published-success?style=for-the-badge)](STUDIES.md)
 [![SOTA](https://img.shields.io/badge/SOTA-tracker-blue?style=for-the-badge)](SOTA.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![Topic: qwen](https://img.shields.io/badge/topic-qwen-orange?style=for-the-badge)](https://github.com/topics/qwen)
@@ -49,14 +49,14 @@ citable URL.
 
 ## Current SOTA
 
-> Last updated: **2026-05-12** · Hardware: **2× NVIDIA RTX PRO 6000 Blackwell** (TP=2, SM120, 96 GB each, PCIe Gen5 x16)
+> Last updated: **2026-05-15** · Hardware: **2× NVIDIA RTX PRO 6000 Blackwell** (TP=2, SM120, 96 GB each, PCIe Gen5 x16)
 
 ### 🏆 Production-deployed config (2026-05-12): **`repne/vllm:v3` + FP8 + MTP=3**
 
 The configuration currently live on production (`vllm-qwen36-27b-sota.service`,
 promoted 2026-05-12 ~10:03 MSK). 88.4 % HE / 89.1 % MBPP / 369 tok/s peak /
 98 tok/s single-user / 0 length-truncated. Reasoning routed cleanly into the
-OpenAI `reasoning` field; `content` clean.
+OpenAI `reasoning` field; `content` clean. For single-user OpenCode coding, the current deployed client profile now adds `thinking_token_budget=2048`, eliminating runaway thinking loops while preserving thinking mode.
 
 **Benchmark-only — NOT deployable:** FP8+MTP=5 scored 93.3 % HE / 402 tok/s peak
 in the offline harness but leaks raw `<think>...</think>` blocks into the OpenAI
@@ -114,7 +114,12 @@ and [LEAK_DETECTION.md](https://github.com/jcartu/qwen-bench-2026-05-12-v3-suite
 <img src="docs/images/studies_index.png" alt="Studies timeline" width="100%" />
 </div>
 
-Each study is a self-contained satellite repo. Studies are listed newest-first.
+Each study is a self-contained satellite repo or hub-native production addendum. Studies are listed newest-first.
+
+### 📖 2026-05 · Single-user thinking-budget addendum
+**[`studies/2026-05-15-single-user-thinking-budget`](studies/2026-05-15-single-user-thinking-budget/)** · *client-side hard thinking budget · 5-problem coding probe · c=1/2/4/8 fanout sweep*
+
+Follow-up to the v3 production rollout: the engine was correct, but unbounded Qwen3 thinking caused coding prompts to spiral into 50k-character reasoning tails. `thinking_token_budget=2048` kept thinking enabled, improved pass rate 70%→80%, eliminated stuck responses 10%→0%, and cut c=1 p95 latency 130.8s→19.6s.
 
 ### 📖 2026-05 · BF16+DFlash parameter sweep on `repne/vllm:v2`
 **[`qwen-bench-2026-05-dflash-v2-sweep`](https://github.com/jcartu/qwen-bench-2026-05-dflash-v2-sweep)** · *13 configs · 195 cells · 421 quality problems · 7h total wall time*
@@ -281,7 +286,7 @@ When you publish a new benchmark study:
 4. **Open a PR against this hub** that:
    - Adds an entry to [`STUDIES.md`](STUDIES.md) with abstract + headline
    - Updates [`SOTA.md`](SOTA.md) if any record was broken
-   - Drops the study's `master.csv` into [`data/{YYYY-MM}-{slug}.csv`](data/)
+   - Drops the study's `master.csv` or hub-native addendum CSV into [`data/{YYYY-MM}-{slug}.csv`](data/)
    - Bumps the `studies-N_published` shield count at the top of this README
 
 Full per-study checklist, slug guidelines, and URL-stability rationale: **[CONTRIBUTING.md](CONTRIBUTING.md)**
