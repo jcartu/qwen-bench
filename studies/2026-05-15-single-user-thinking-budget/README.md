@@ -11,7 +11,7 @@ Setting `thinking_token_budget=2048` per request:
 
 - eliminated stuck responses: **10% -> 0%** on the c=1 hard-coding sweep
 - improved pass rate: **70% -> 80%**
-- cut p95 latency: **130.8s -> 19.6s** (**6.7x faster tail**)
+- cut matched c=1 concurrency-probe p95 latency: **130.8s -> 19.6s** (**6.7x faster tail**)
 - cut max reasoning waste: **51k+ chars -> <8.5k chars**
 - scaled cleanly from c=1 to c=8 with p50 almost flat: **18.4s -> 19.6s**
 
@@ -40,7 +40,7 @@ Qwen3 thinking mode is valuable for coding, so `enable_thinking=false` is the wr
 | C3 | on | 8192 | 80% | 0% | 466.6s |
 | C4 | off | n/a | 70% | 0% | 28.6s |
 
-2048 is the knee: same quality as 4096/8192, much lower latency.
+2048 is the knee: same budget-sweep quality as 4096/8192, much lower latency. The 130.8s p95 comparison comes from the matched F2/F1 c=1 concurrency probe, where unbounded and 2048 both passed 80% but unbounded had the runaway tail.
 
 ## Concurrency sweep
 

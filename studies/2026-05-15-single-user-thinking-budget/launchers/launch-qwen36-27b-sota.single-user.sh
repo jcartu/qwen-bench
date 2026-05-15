@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # ──────────────────────────────────────────────────────────────────────────────
-# launch-qwen36-27b-sota.sh — SOTA 27B production server (SINGLE-USER TUNED)
+# launch-qwen36-27b-sota.sh — SOTA 27B production server (SINGLE-USER TUNED, LIVE)
 #
 # Configuration: FP8 + MTP=3 on Repne v3 fork, TP=2 across GPU 0 + GPU 1
 # Reference:     https://github.com/jcartu/qwen-bench/blob/main/SOTA.md
 # Canonical:     llm-stress-harness/launchers/launch_fp8_mtp.sh
 #
-# ── PROPOSED PATCH (Sisyphus 2026-05-15, see FINDINGS.md) ─────────────────────
-# Changes from the live launcher (~/vllm-services/launch-qwen36-27b-sota.sh):
+# ── APPLIED SINGLE-USER PATCH (Sisyphus 2026-05-15; see qwen-bench addendum) ─────────────────────
+# Changes from the previous live launcher (pre-2026-05-15):
 #
 #   1. SECURITY: removed `-e HUGGING_FACE_HUB_TOKEN=$HF_TOKEN` from the
 #      docker run line. That env var was visible in `ps` (process cmdline)
@@ -30,19 +30,15 @@
 #      client-side per request. Already configured at
 #      /home/josh/.config/opencode/opencode.jsonc (rasputin-27b) = 2048.
 #
-# Apply with:
-#     cp ~/vllm-services/launch-qwen36-27b-sota.sh \
-#        ~/vllm-services/launch-qwen36-27b-sota.sh.bak.$(date +%Y%m%dT%H%M%S)
-#     cp /tmp/qwen-rollback-2026-05-14/launch-qwen36-27b-sota.proposed.sh \
-#        ~/vllm-services/launch-qwen36-27b-sota.sh
-#     systemctl --user restart vllm-qwen36-27b-sota.service
+# Applied live on 2026-05-15. Historical pre-rollout launcher backup lives at
+# ~/vllm-services/launch-qwen36-27b-sota.sh.bak.20260515T033019-pre-single-user.
 #
-# Downtime: ~60-90s for cudagraph capture (reduced from ~120s thanks to #2).
-# ── END PROPOSED PATCH ────────────────────────────────────────────────────────
+# Actual rollout note: first post-change cold start took ~5 min due to torch.compile + MTP head JIT; subsequent restarts should benefit from cache reuse.
+# ── END APPLIED PATCH ────────────────────────────────────────────────────────
 #
 # This is the production-recommended config after the 2026-05-12 v3 suite:
 #   - FP8+MTP=3 on v3: 88.4% HE, 89.1% MBPP, 369 tok/s @ c=4 ctx=0
-#   - MTP=5 produces ~25% stuck-thinking rate (cap-hits, empty content) vs MTP=3 at 8%. Verified 2026-05-13 via probe-mtp-think-leak.sh on dev16595 build (~/probe-mtp-think-leak.sh). NO <think>/</think> parser-state leakage observed at any MTP value (1/2/3/5) — PR #34668 fixed that. The remaining issue at MTP>=5 is degraded speculation accuracy on hard problems, causing the model to chase its reasoning longer before terminating. Not parser corruption.
+#   - MTP=5 is benchmark-only: later production validation showed raw <think>...</think> content leakage despite strong offline HE. MTP=3 remains the deployed production path, validated leak-free for content/tool surfaces in the v3 suite and stabilized for OpenCode by client-side thinking_token_budget=2048.
 #   - v3 requires local argmax reduction for TP=2 and FlashInfer spec attention
 #
 # Hardware pinning (intentional):
